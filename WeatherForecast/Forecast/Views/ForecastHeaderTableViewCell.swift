@@ -24,7 +24,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
     }
     //MARK: - subviews
     
-    private let currentDateLabel: UILabel = {
+    let currentDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
@@ -33,7 +33,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let mainImageView: UIImageView = {
+    let weatherImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
@@ -73,7 +73,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    private let tempLabel: UILabel = {
+    let tempLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 18, weight: .regular)
@@ -82,7 +82,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let humidityLabel: UILabel = {
+    let humidityLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 18, weight: .regular)
@@ -91,7 +91,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let windSpeedLabel: UILabel = {
+    let windSpeedLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 18, weight: .regular)
@@ -115,7 +115,7 @@ extension ForecastHeaderTableViewCell {
     private func setupViews() {
         contentView.backgroundColor = Palette.mainTintColor
         contentView.addSubview(currentDateLabel)
-        contentView.addSubview(mainImageView)
+        contentView.addSubview(weatherImageView)
         contentView.addSubview(tempImageView)
         contentView.addSubview(humidityImageView)
         contentView.addSubview(windImageView)
@@ -128,25 +128,25 @@ extension ForecastHeaderTableViewCell {
             currentDateLabel.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             currentDateLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
             
-            mainImageView.topAnchor.constraint(equalTo: currentDateLabel.bottomAnchor, constant: 54),
-            mainImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6),
-//            mainImageView.widthAnchor.constraint(equalToConstant: 150),
-//            mainImageView.heightAnchor.constraint(equalToConstant: 90),
-            mainImageView.widthAnchor.constraint(equalToConstant: 210),
-            mainImageView.heightAnchor.constraint(equalToConstant: 140),
+            weatherImageView.topAnchor.constraint(equalTo: currentDateLabel.bottomAnchor, constant: 34),
+            weatherImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6),
+            //            mainImageView.widthAnchor.constraint(equalToConstant: 150),
+            //            mainImageView.heightAnchor.constraint(equalToConstant: 90),
+            weatherImageView.widthAnchor.constraint(equalToConstant: 210),
+            weatherImageView.heightAnchor.constraint(equalToConstant: 140),
             
-            tempImageView.topAnchor.constraint(equalTo: mainImageView.topAnchor, constant: 25),
-            tempImageView.leadingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: 30),
+            tempImageView.topAnchor.constraint(equalTo: weatherImageView.topAnchor, constant: 25),
+            tempImageView.leadingAnchor.constraint(equalTo: weatherImageView.trailingAnchor, constant: 30),
             tempImageView.widthAnchor.constraint(equalToConstant: 18),
             tempImageView.heightAnchor.constraint(equalToConstant: 20),
             
             humidityImageView.topAnchor.constraint(equalTo: tempImageView.bottomAnchor, constant: 15),
-            humidityImageView.leadingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: 30),
+            humidityImageView.leadingAnchor.constraint(equalTo: weatherImageView.trailingAnchor, constant: 30),
             humidityImageView.widthAnchor.constraint(equalToConstant: 18),
             humidityImageView.heightAnchor.constraint(equalToConstant: 20),
             
             windImageView.topAnchor.constraint(equalTo: humidityImageView.bottomAnchor, constant: 15),
-            windImageView.leadingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: 30),
+            windImageView.leadingAnchor.constraint(equalTo: weatherImageView.trailingAnchor, constant: 30),
             windImageView.widthAnchor.constraint(equalToConstant: 18),
             windImageView.heightAnchor.constraint(equalToConstant: 20),
             

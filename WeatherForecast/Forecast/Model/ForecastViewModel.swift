@@ -6,83 +6,136 @@
 //
 
 import Foundation
-import Alamofire
 import CoreLocation
 
-enum WeatherURLs: String {
-//    case current = "https://api.openweathermap.org/data/2.5/weather?units=metric&appid="
-    case daily = "https://api.openweathermap.org/data/3.0/onecall?units=metric&appid="
+struct ForecastStub {
+    var city: String = ""
+    var country: String = ""
+    let lat: Double
+    let lon: Double
+    let timezoneOffset: Int
+    let current: [CurrentStub]
+    var daily: [DailyStub]
+    let hourly: [HourlyStub]
+}
+
+struct CurrentStub {
+    let currentTime: Int
+    let sunrise: Int
+    let sunset: Int
+    let humidity: Int
+    let windSpeed: Double
+    let windDeg: Int
+    let weather: [WeatherStub]
+}
+
+struct WeatherStub {
+    let descript: String
+}
+
+struct DailyStub {
+    let dTime: Int
+    let dWeather: [WeatherStub]
+    let dTempDay: Double
+    let dTempNight: Double
+}
+
+struct HourlyStub {
+    let hTime: Int
+    let hTemp: Double
+    let hWeather: [WeatherStub]
+}
+
+struct CoordinateCityStub {
+    let country: String
+    let name: String
+    let lat: Double
+    let lon: Double
+}
+
+struct NameCityStub {
+    let country: String
+    let name: String
 }
 
 
 class ForecastViewModel {
+    //MARK: - props
+    private let dataModel: ForecastDataModel
     
-    private var apiKey: Data {
-        get {
-            guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
-                fatalError("Couldn't find file 'Info.plist'.")
-            }
-            let plist = NSDictionary(contentsOfFile: filePath)
-            guard let value = plist?.object(forKey: "API_KEY") as? Data else {
-                fatalError("Couldn't find key 'API_KEY' in 'Info.plist'.")
-            }
-            return value
-        }
+    var forecast: ForecastStub?
+    
+    //MARK: - init
+    init(dataModel: ForecastDataModel) {
+        self.dataModel = dataModel
     }
     //MARK: - methods
-    
-    private func encodeApiKey(_ key: Data) -> String {
-        let key = String(data: key, encoding: .utf8)
-        return key ?? ""
-    }
-
-    
-//    var currentWeather: ForecastModel?
-//       var currentWeatherCoordinate: String = ""
-//
-       func createURLForCurrentWeather(_ coordinate: CLLocationCoordinate2D) -> String {
-           let headRL = WeatherURLs.daily.rawValue
-           let cApiKey = self.encodeApiKey(apiKey)
-           let coordinateParams = "&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)"
-
-           let resultURL = headRL + cApiKey + coordinateParams
-
-           return resultURL
-       }
-//
-//       func decodeModelFromData(completition: @escaping (ForecastModel) -> Void) {
-//           if let url = URL(string: currentWeatherCoordinate) {
-//               let decoder = JSONDecoder()
-//               decoder.dateDecodingStrategy = .iso8601
-//
-//               let request = AF.request(url)
-//
-//               request.validate().responseDecodable(of: ForecastModel.self, decoder: decoder) { data in
-//                   if let uValue = data.value {
-//                       completition(uValue)
-//
-//                       print("All: \(String(describing: uValue))")
-//                       print("Weather descript: \(String(describing: uValue.weather[0].descript))")
-//                   }
-//               }
-//           }
-//       }
-    
-    lazy var locationManager = CLLocationManager()
-    func getData() {
-//            let cUrl = self.createUrl(VideoURLs.playlist.rawValue, "&playlistId=", "UUu5jfQcpRLm9xhmlSd5S8xw")
-        let cUrl = createURLForCurrentWeather(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            print(cUrl)
+    func createCurrentForecastStub(_ fModel: ForecastModel?, _ cModel: NameCityModel?, completition: @escaping (ForecastStub) -> Void) {
+        
+        let newCWeather = WeatherStub(descript: fModel?.weather[0].descript ?? "no CW")
+        
+        let cur = fModel
+        
+        let newCurrent = CurrentStub(currentTime: Int(cur?.currentTime ?? 0),
+                                     sunrise: Int(cur?.sunrise ?? 0),
+                                     sunset: Int(cur?.sunset ?? 0),
+                                     humidity: Int(cur?.humidity ?? 0),
+                                     windSpeed: cur?.windSpeed ?? 0,
+                                     windDeg: Int(cur?.windDeg ?? 0),
+                                     weather: [newCWeather])
+        
+        let dailyArr = fModel?.daily
+        
+        var newDailyArr: [DailyStub] = []
+        if let uDailyArr = dailyArr {
             
-    //        let u = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet&part=statistics&part=player&id=x31vGxoI7go&key=AIzaSyBahXEiv91xvS7j9fZijlRMMHT59QMwRRM"
-    //        print(u)
+            for (_, dayItem) in uDailyArr.enumerated() {
             
-            
-            let req = AF.request(cUrl)
-
-            req.responseJSON { data in
-                print(data)
-
+                let day = dayItem
+                let newDWeather = WeatherStub(descript: day.dWeather[0].descript)
+                
+                let newD = DailyStub(dTime: Int(day.dTime),
+                                     dWeather: [newDWeather],
+                                     dTempDay: day.dTempDay,
+                                     dTempNight: day.dTempNight)
+                newDailyArr.append(newD)
             }
         }
+        
+        let hourlyArr = fModel?.hourly
+        
+        var newHourlyArr: [HourlyStub] = []
+        if let uHourlyArr = hourlyArr {
+            
+            for (_, hItem) in uHourlyArr.enumerated() {
+                
+                let hour = hItem
+                let newHWeather = WeatherStub(descript: hour.hWeather[0].descript)
+                
+                let newH = HourlyStub(hTime: Int(hour.hTime),
+                                      hTemp: hour.hTemp,
+                                      hWeather: [newHWeather])
+                newHourlyArr.append(newH)
+            }
+        }
+        
+        let newForecast = ForecastStub(city: cModel?.name ?? "",
+                                       country: cModel?.country ?? "",
+                                       lat: fModel?.lat ?? 0,
+                                       lon: fModel?.lon ?? 0,
+                                       timezoneOffset: fModel?.timezoneOffset ?? 0,
+                                       current: [newCurrent],
+                                       daily: newDailyArr.sorted(by: { $0.dTime < $1.dTime }),
+                                       hourly: newHourlyArr.sorted(by: { $0.hTime < $1.hTime }))
+//        forecasts.append(newForecast)
+        forecast = newForecast
+        completition(newForecast)
+    }
+    
+    func takeWeatherForecast(_ coord: CLLocationCoordinate2D, comletition: @escaping (ForecastModel, NameCityModel) -> Void) {
+        self.dataModel.decodeModelFromData(coord) { fModel, cModel  in
+            print("from vm \(cModel)")
+            comletition(fModel, cModel)
+        }
+    }
 }

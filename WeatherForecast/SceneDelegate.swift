@@ -14,7 +14,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
         
-        let vm = ForecastViewModel()
+        let dm = ForecastDataModel()
+        let vm = ForecastViewModel(dataModel: dm)
         let vc = ForecastViewController(viewModel: vm)
         
         let navVC = UINavigationController(rootViewController: vc)

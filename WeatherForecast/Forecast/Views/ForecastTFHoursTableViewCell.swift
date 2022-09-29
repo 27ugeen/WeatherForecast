@@ -14,7 +14,11 @@ class ForecastTFHoursTableViewCell: UITableViewCell {
     static let cellId = "ForecastTFHoursTableViewCell"
     private let collectionCellID = ForecastTFHoursCollectionViewCell.cellId
     
-//    var model: ForecastStub?
+    var model: ForecastStub? {
+        didSet {
+            tFHoursCollectionView.reloadData()
+        }
+    }
     
     //MARK: - init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -67,56 +71,67 @@ extension ForecastTFHoursTableViewCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = tFHoursCollectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID, for: indexPath) as! ForecastTFHoursCollectionViewCell
         
-//        let hModel = model?.hourly[indexPath.item]
-//        let cModel = model?.current[0]
-//
-//        let localOffset = TimeZone.current.secondsFromGMT()
-//        let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
-//
-//        let curTime = Double((cModel?.currentTime ?? 0) + timeOffset).dateFormatted("HH")
-//        let cellTime = Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH")
-//        let sunrise = Double((cModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
-//        let sunset = Double((cModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
-
-//        if cellTime == curTime {
-//            cell.wrapperView.backgroundColor = UIColor(rgb: 0x204EC7)
-//            cell.tempLabel.textColor = .white
-//            cell.timeLabel.textColor = .white
-//        } else {
-//            cell.wrapperView.backgroundColor = nil
-//            cell.tempLabel.textColor = .black
-//            cell.timeLabel.textColor = .black
-//        }
+        let hModel = model?.hourly[indexPath.item]
+        //        print(hModel)
+        let cModel = model?.current[0]
         
-//            switch hModel?.hWeather[0].descript {
-//            case "clear sky":
-//                if cellTime > sunrise && cellTime <= sunset {
-//                cell.weatherImageView.image = UIImage(named: "sun")
-//                } else {
-//                cell.weatherImageView.image = UIImage(named: "moon")
-//                }
-//            case "scattered clouds":
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//            case "few clouds":
-//                if cellTime > sunrise && cellTime <= sunset {
-//                cell.weatherImageView.image = UIImage(named: "fewClouds")
-//                } else {
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//                }
-//            case "heavy intensity rain":
-//                cell.weatherImageView.image = UIImage(named: "heavyRain")
-//            case "moderate rain":
-//                cell.weatherImageView.image = UIImage(named: "rain")
-//            case "light rain":
-//                cell.weatherImageView.image = UIImage(named: "rain")
-//            case .none:
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//            case .some(_):
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//            }
+        let localOffset = TimeZone.current.secondsFromGMT()
+        let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
         
-//        cell.timeLabel.text = "\(Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH:mm".toSetTimeUnits("short")))"
-//        cell.tempLabel.text = "\(Int((hModel?.hTemp ?? 0).rounded()).toSetTempUnits())"
+        
+        let cellTime = Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH")
+        let sunrise = Double((cModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
+        let sunset = Double((cModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
+        
+        let isDay: Bool = cellTime > sunrise && cellTime <= sunset
+        
+        switch hModel?.hWeather[0].descript {
+        case "Clear":
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_bright")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_bright")
+            }
+        case "Clouds":
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_cloudy")
+            }
+        case "Rain":
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_shower")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_shower")
+            }
+        case "Drizzle":
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_rain")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_rain")
+            }
+        case "Thunderstorm":
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_thunder")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_thunder")
+            }
+        case .none:
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_cloudy")
+            }
+        case .some(_):
+            if isDay {
+                cell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")
+            } else {
+                cell.weatherImageView.image = UIImage(named: "ic_white_night_cloudy")
+            }
+        }
+        
+        cell.timeLabel.text = "\(Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH"))⁰⁰"
+        cell.tempLabel.text = "\(Int((hModel?.hTemp ?? 0).rounded()))°"
         return cell
     }
 }

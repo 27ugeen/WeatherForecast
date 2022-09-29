@@ -16,6 +16,7 @@
 		1166A04028E4D0F900C4F386 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1166A03F28E4D0F900C4F386 /* Extensions.swift */; };
 		1166A04228E4D15700C4F386 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1166A04128E4D15700C4F386 /* Palette.swift */; };
 		1166A04528E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1166A04428E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift */; };
+		118627A128E5B8A5001FFB31 /* ForecastDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118627A028E5B8A5001FFB31 /* ForecastDataModel.swift */; };
 		11C1325F28E57C0400BB9BF7 /* ForecastTFHoursTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C1325E28E57C0400BB9BF7 /* ForecastTFHoursTableViewCell.swift */; };
 		11C1326128E57C4900BB9BF7 /* ForecastTFHoursCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C1326028E57C4900BB9BF7 /* ForecastTFHoursCollectionViewCell.swift */; };
 		11C1326328E5920300BB9BF7 /* ForecastDailyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C1326228E5920300BB9BF7 /* ForecastDailyTableViewCell.swift */; };
@@ -35,6 +36,7 @@
 		1166A03F28E4D0F900C4F386 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1166A04128E4D15700C4F386 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		1166A04428E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastHeaderTableViewCell.swift; sourceTree = "<group>"; };
+		118627A028E5B8A5001FFB31 /* ForecastDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastDataModel.swift; sourceTree = "<group>"; };
 		11C1325E28E57C0400BB9BF7 /* ForecastTFHoursTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastTFHoursTableViewCell.swift; sourceTree = "<group>"; };
 		11C1326028E57C4900BB9BF7 /* ForecastTFHoursCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastTFHoursCollectionViewCell.swift; sourceTree = "<group>"; };
 		11C1326228E5920300BB9BF7 /* ForecastDailyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastDailyTableViewCell.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 			children = (
 				1108EAFA28E49D050034EB4B /* AppDelegate.swift */,
 				1108EAFC28E49D050034EB4B /* SceneDelegate.swift */,
+				118627A028E5B8A5001FFB31 /* ForecastDataModel.swift */,
 				1166A03E28E4D0DB00C4F386 /* Forecast */,
 				1166A04328E4D30A00C4F386 /* Helpers */,
 				1108EB0328E49D070034EB4B /* Assets.xcassets */,
@@ -256,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1166A04028E4D0F900C4F386 /* Extensions.swift in Sources */,
+				118627A128E5B8A5001FFB31 /* ForecastDataModel.swift in Sources */,
 				1108EAFF28E49D050034EB4B /* ForecastViewController.swift in Sources */,
 				11C1326328E5920300BB9BF7 /* ForecastDailyTableViewCell.swift in Sources */,
 				11C1325F28E57C0400BB9BF7 /* ForecastTFHoursTableViewCell.swift in Sources */,
