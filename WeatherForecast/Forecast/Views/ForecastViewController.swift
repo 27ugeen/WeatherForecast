@@ -13,6 +13,7 @@ class ForecastViewController: UIViewController {
     
     private let headerID = ForecastHeaderTableViewCell.cellId
     private let tFHoursID = ForecastTFHoursTableViewCell.cellId
+    private let dailyID = ForecastDailyTableViewCell.cellId
     
     //MARK: - init
     init(viewModel: ForecastViewModel) {
@@ -60,8 +61,6 @@ class ForecastViewController: UIViewController {
     @objc private func rightBtnTapped() {
         print("right tapped")
     }
-
-
 }
 
 //MARK: - setupViews
@@ -71,9 +70,7 @@ extension ForecastViewController {
         
         tableView.register(ForecastHeaderTableViewCell.self, forCellReuseIdentifier: headerID)
         tableView.register(ForecastTFHoursTableViewCell.self, forCellReuseIdentifier: tFHoursID)
-//        tableView.register(DetailNightTableViewCell.self, forCellReuseIdentifier: nightCellID)
-//        tableView.register(SunMoonTableViewCell.self, forCellReuseIdentifier: sunMoonCellID)
-//        tableView.register(AirQTableViewCell.self, forCellReuseIdentifier: airQCellID)
+        tableView.register(ForecastDailyTableViewCell.self, forCellReuseIdentifier: dailyID)
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -89,23 +86,28 @@ extension ForecastViewController {
 //MARK: - UITableViewDataSource
 extension ForecastViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 10
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let headerCell = tableView.dequeueReusableCell(withIdentifier: headerID) as! ForecastHeaderTableViewCell
-        let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
-        
 //        let localOffset = TimeZone.current.secondsFromGMT()
 //        let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
         
         switch indexPath.row {
         case 0:
+            let headerCell = tableView.dequeueReusableCell(withIdentifier: headerID) as! ForecastHeaderTableViewCell
             return headerCell
         case 1:
+            let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
             return tFHCell
         default:
-            return headerCell
+            let dailyCell = tableView.dequeueReusableCell(withIdentifier: dailyID) as! ForecastDailyTableViewCell
+//            if dailyCell.isSelected {
+//                dailyCell.tempLabel.text = "000"
+//            } else {
+//                dailyCell.tempLabel.text = "111"
+//            }
+            return dailyCell
         }
     }
 }
@@ -118,14 +120,32 @@ extension ForecastViewController: UITableViewDelegate {
         case 1:
             return 146
         default:
-            return 0
+            return 70
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if indexPath.row > 2 {
+        
+        if indexPath.row > 1 {
+            let dailyCell = tableView.cellForRow(at: indexPath) as! ForecastDailyTableViewCell
+            
+                dailyCell.tempLabel.textColor = Palette.secondTintColor
+                dailyCell.dayLabel.textColor = Palette.secondTintColor
+                dailyCell.weatherImageView.tintColor = Palette.secondTintColor
+
+            
+            dailyCell.wrapperView.layer.shadowColor = UIColor.black.cgColor
+            dailyCell.wrapperView.layer.shadowOpacity = 1
+            dailyCell.wrapperView.layer.shadowOffset = .zero
+            dailyCell.wrapperView.layer.shadowRadius = 10
+            dailyCell.wrapperView.layer.shadowPath = UIBezierPath(rect: dailyCell.wrapperView.bounds).cgPath
+            dailyCell.wrapperView.layer.rasterizationScale = UIScreen.main.scale
+
 //            self.goToDailyDetailAction?(indexPath.row - 3)
-//        }
+            print(indexPath.row)
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+
+        }
     }
 }
 
