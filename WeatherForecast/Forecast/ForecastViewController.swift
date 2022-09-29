@@ -12,6 +12,7 @@ class ForecastViewController: UIViewController {
     private let viewModel: ForecastViewModel
     
     private let headerID = ForecastHeaderTableViewCell.cellId
+    private let tFHoursID = ForecastTFHoursTableViewCell.cellId
     
     //MARK: - init
     init(viewModel: ForecastViewModel) {
@@ -69,7 +70,7 @@ extension ForecastViewController {
         view.addSubview(tableView)
         
         tableView.register(ForecastHeaderTableViewCell.self, forCellReuseIdentifier: headerID)
-//        tableView.register(DetailDayTableViewCell.self, forCellReuseIdentifier: dayCellID)
+        tableView.register(ForecastTFHoursTableViewCell.self, forCellReuseIdentifier: tFHoursID)
 //        tableView.register(DetailNightTableViewCell.self, forCellReuseIdentifier: nightCellID)
 //        tableView.register(SunMoonTableViewCell.self, forCellReuseIdentifier: sunMoonCellID)
 //        tableView.register(AirQTableViewCell.self, forCellReuseIdentifier: airQCellID)
@@ -88,11 +89,12 @@ extension ForecastViewController {
 //MARK: - UITableViewDataSource
 extension ForecastViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let headerCell = tableView.dequeueReusableCell(withIdentifier: headerID) as! ForecastHeaderTableViewCell
+        let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
         
 //        let localOffset = TimeZone.current.secondsFromGMT()
 //        let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
@@ -100,6 +102,8 @@ extension ForecastViewController: UITableViewDataSource {
         switch indexPath.row {
         case 0:
             return headerCell
+        case 1:
+            return tFHCell
         default:
             return headerCell
         }
@@ -111,6 +115,8 @@ extension ForecastViewController: UITableViewDelegate {
         switch indexPath.row {
         case 0:
             return 228
+        case 1:
+            return 146
         default:
             return 0
         }

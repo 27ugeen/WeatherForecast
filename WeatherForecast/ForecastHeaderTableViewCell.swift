@@ -104,7 +104,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "icon_wind_se")
+        imageView.image = UIImage(named: "icon_wind_ne")
         imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = Palette.mainTextColor
         return imageView
