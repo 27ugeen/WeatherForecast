@@ -98,7 +98,7 @@ class ForecastViewModel {
     //MARK: - methods
     func setWeatherIcon(_ isDay: Bool, _ icon: String) -> String {
         let name = String(format: "%@.%@", isDay ? "day" : "night", icon)
-        return weatherIcon[name] ?? ""
+        return weatherIcon[name] ?? "ic_white_day_cloudy"
     }
     
     func setWindDirection(_ direct: Int) -> String {

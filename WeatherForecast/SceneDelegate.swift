@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import MapKit
+import CoreLocation
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -14,9 +16,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
         
+        let mapView = MKMapView()
+        let locManager = CLLocationManager()
+        
         let dm = ForecastDataModel()
         let vm = ForecastViewModel(dataModel: dm)
-        let vc = ForecastViewController(viewModel: vm)
+        let vc = ForecastViewController(viewModel: vm, mapView: mapView, locationManager: locManager)
         
         let navVC = UINavigationController(rootViewController: vc)
         

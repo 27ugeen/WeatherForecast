@@ -6,11 +6,14 @@
 //
 
 import UIKit
+import MapKit
 import CoreLocation
 
 class ForecastViewController: UIViewController {
     //MARK: - props
     private let viewModel: ForecastViewModel
+    private let mapView: MKMapView
+    private let locationManager: CLLocationManager
     
     private let headerID = ForecastHeaderTableViewCell.cellId
     private let tFHoursID = ForecastTFHoursTableViewCell.cellId
@@ -23,8 +26,10 @@ class ForecastViewController: UIViewController {
     }
     
     //MARK: - init
-    init(viewModel: ForecastViewModel) {
+    init(viewModel: ForecastViewModel, mapView: MKMapView, locationManager: CLLocationManager) {
         self.viewModel = viewModel
+        self.mapView = mapView
+        self.locationManager = locationManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -37,16 +42,9 @@ class ForecastViewController: UIViewController {
         
         view.backgroundColor = Palette.mainTintColor
         navigationController?.navigationBar.tintColor = Palette.mainTextColor
-        //        ForecastDataModel().getData()
         
-        //TODO: - need to take out this logic
-        lazy var locationManager = CLLocationManager()
-        
-        viewModel.takeWeatherForecast(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)) { forecast in
-            self.forecastModel = forecast
-//            print(self.forecastModel?.current[0].windDeg)
-        }
-        
+
+        fetchData()
         setupViews()
         setupNuvButtons()
     }
@@ -70,6 +68,13 @@ class ForecastViewController: UIViewController {
     }()
     
     //MARK: - methods
+    private func fetchData() {
+        viewModel.takeWeatherForecast(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)) { forecast in
+            self.forecastModel = forecast
+//            print(self.forecastModel?.current[0].windDeg)
+        }
+    }
+    
     private func setupNuvButtons() {
         let leftBarButton = UIBarButtonItem(image: UIImage(named: "ic_place") , style: .done, target: self, action: #selector(leftBtnTapped))
         let rightBarButton = UIBarButtonItem(image: UIImage(named: "ic_my_location"), style: .plain, target: self, action: #selector(rightBtnTapped))
@@ -78,8 +83,19 @@ class ForecastViewController: UIViewController {
         self.navigationItem.setRightBarButton(rightBarButton, animated: true)
     }
     
+    private func getPointWeather(_ coord: CLLocationCoordinate2D) {
+        viewModel.takeWeatherForecast(coord) { forecast in
+            self.forecastModel = forecast
+        }
+    }
+    
     @objc private func leftBtnTapped() {
         print("left tapped")
+        let mapVC = MapViewController(mapView: mapView, locationManager: locationManager)
+        mapVC.getWeatherAction = { coordinates in
+            self.getPointWeather(coordinates)
+        }
+        self.navigationController?.pushViewController(mapVC, animated: true)
     }
     
     @objc private func rightBtnTapped() {

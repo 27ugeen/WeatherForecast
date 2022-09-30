@@ -20,7 +20,7 @@ class ForecastTFHoursTableViewCell: UITableViewCell {
         }
     }
     
-    var viewModel: ForecastViewModel?
+    weak var viewModel: ForecastViewModel?
     
     //MARK: - init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
