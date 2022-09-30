@@ -11,7 +11,7 @@ import CoreLocation
 
 enum WeatherURLs: String {
     case daily = "https://api.openweathermap.org/data/3.0/onecall?units=metric&appid="
-    case geo = "http://api.openweathermap.org/geo/1.0/direct?limit=1&appid="
+    case geo = "http://api.openweathermap.org/geo/1.0/direct?limit=10&appid="
     case city = "http://api.openweathermap.org/geo/1.0/reverse?limit=1&appid="
 }
 
@@ -134,7 +134,7 @@ struct HourlyModel: Decodable {
     }
 }
 
-struct CoordinateCityModel: Decodable {
+struct CityModel: Decodable {
     let country: String
     let name: String
     let lat: Double
@@ -171,6 +171,14 @@ class ForecastDataModel {
         let headRL = WeatherURLs.city.rawValue
         let cApiKey = self.encodeApiKey(apiKey)
         let qStr = "&lat=\(coord.latitude)&lon=\(coord.longitude)"
+        let resultURL = headRL + cApiKey + qStr
+        return resultURL
+    }
+    
+    private func createURLForGeo(_ name: String) -> String {
+        let headRL = WeatherURLs.geo.rawValue
+        let cApiKey = self.encodeApiKey(apiKey)
+        let qStr = "&q=\(name)"
         let resultURL = headRL + cApiKey + qStr
         return resultURL
     }
@@ -228,6 +236,26 @@ class ForecastDataModel {
     
     //===========================================
     
+    
+    func takeLocFromName(_ name: String, completition: @escaping ([CityModel]) -> Void) {
+        let cUrl = self.createURLForGeo(name)
+        
+        if let url = URL(string: cUrl) {
+            let decoder = JSONDecoder()
+            
+            let request = AF.request(url)
+            
+            request.validate().responseDecodable(of: [CityModel].self, decoder: decoder) { data in
+                if let uValue = data.value {
+                    if uValue.isEmpty {
+                        print("No such city found")
+                        return
+                    }
+                    completition(uValue)
+                }
+            }
+        }
+    }
 //    lazy var locationManager = CLLocationManager()
 //    func getData() {
 //        //            let cUrl = self.createUrl(VideoURLs.playlist.rawValue, "&playlistId=", "UUu5jfQcpRLm9xhmlSd5S8xw")

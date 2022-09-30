@@ -46,7 +46,7 @@ class ForecastViewController: UIViewController {
 
         fetchData()
         setupViews()
-        setupNuvButtons()
+        setupNavButtons()
     }
     //MARK: - subviews
     private let titleLabel: UILabel = {
@@ -75,7 +75,7 @@ class ForecastViewController: UIViewController {
         }
     }
     
-    private func setupNuvButtons() {
+    private func setupNavButtons() {
         let leftBarButton = UIBarButtonItem(image: UIImage(named: "ic_place") , style: .done, target: self, action: #selector(leftBtnTapped))
         let rightBarButton = UIBarButtonItem(image: UIImage(named: "ic_my_location"), style: .plain, target: self, action: #selector(rightBtnTapped))
         let leftBarTitle = UIBarButtonItem.init(customView: titleLabel)
@@ -100,6 +100,8 @@ class ForecastViewController: UIViewController {
     
     @objc private func rightBtnTapped() {
         print("right tapped")
+        let searchVC = SearchViewController()
+        self.navigationController?.pushViewController(searchVC, animated: true)
     }
 }
 

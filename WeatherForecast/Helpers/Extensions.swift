@@ -37,20 +37,50 @@ extension Double {
         return dateFormatter.string(from: date)
     }
 }
-//
-//extension String {
-//    func match(_ regex: String) -> [[String]] {
-//        let nsString = self as NSString
-//        return (try? NSRegularExpression(pattern: regex, options: []))?.matches(in: self, options: [], range: NSMakeRange(0, nsString.length)).map { match in
-//            (0..<match.numberOfRanges).map { match.range(at: $0).location == NSNotFound ? "" : nsString.substring(with: match.range(at: $0)) }
-//        } ?? []
-//    }
-//}
 
 extension UIViewController {
     func showAlert(message: String) {
         let alertVC = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alertVC, animated: true, completion: nil)
+    }
+}
+
+extension UINavigationController {
+    func pushVCFromLeft(controller: UIViewController) {
+        let transition = CATransition()
+        transition.duration = 0.5
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromLeft
+        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
+        view.window!.layer.add(transition, forKey: kCATransition)
+        pushViewController(controller, animated: false)
+    }
+    
+    func popVCToLeft() {
+        let transition = CATransition()
+        transition.duration = 0.5
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromRight
+        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
+        view.window!.layer.add(transition, forKey: kCATransition)
+        popViewController(animated: false)
+    }
+}
+
+extension UITextField {
+    func placeholderColor(color: UIColor) {
+        let attributeString = [
+            NSAttributedString.Key.foregroundColor: color.withAlphaComponent(0.6),
+            NSAttributedString.Key.font: self.font!
+        ] as [NSAttributedString.Key : Any]
+        self.attributedPlaceholder = NSAttributedString(string: self.placeholder!, attributes: attributeString)
+    }
+}
+
+extension String {
+    func toCountry() -> String {
+        let country = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: self)
+        return country ?? ""
     }
 }

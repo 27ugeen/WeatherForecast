@@ -46,16 +46,11 @@ struct HourlyStub {
     let hWeather: [WeatherStub]
 }
 
-struct CoordinateCityStub {
+struct CityStub {
     let country: String
     let name: String
     let lat: Double
     let lon: Double
-}
-
-struct NameCityStub {
-    let country: String
-    let name: String
 }
 
 struct Range {
@@ -66,6 +61,8 @@ struct Range {
 class ForecastViewModel {
     //MARK: - props
     private let dataModel: ForecastDataModel
+    
+    private var cities: [CityStub] = []
     
     private let weatherIcon: [String:String] = [
         "day.Clear" : "ic_white_day_bright",
@@ -171,11 +168,41 @@ class ForecastViewModel {
         completition(newForecast)
     }
     
+    private func createCityStub(_ model: CityModel, completition: @escaping (CityStub) -> Void) {
+        let newCity = CityStub(country: model.country.toCountry(),
+                                      name: model.name,
+                                      lat: model.lat,
+                                      lon: model.lon)
+        completition(newCity)
+    }
+    
     func takeWeatherForecast(_ coord: CLLocationCoordinate2D, comletition: @escaping (ForecastStub) -> Void) {
         self.dataModel.decodeModelFromData(coord) { fModel, cModel  in
             self.createCurrentForecastStub(fModel, cModel) { forecast in
                 comletition(forecast)
             }
+        }
+    }
+    
+    
+    //==================
+    
+    func getForecastFromCityName(_ text: String, completition: @escaping (ForecastStub) -> Void) {
+        self.cities = []
+        self.dataModel.takeLocFromName(text) { arr in
+//            print(arr)
+            arr.forEach { el in
+                self.createCityStub(el) { [self] city in
+                    cities.append(city)
+                    print(cities)
+                }
+            }
+            
+//            self.addForecastToDB(CLLocationCoordinate2D(latitude: city[0].lat, longitude: city[0].lon)) { fModel, cModel in
+//                self.createCurrentForecastStub(fModel, cModel) { forecastStub in
+//                    completition(forecastStub)
+//                }
+//            }
         }
     }
 }
