@@ -42,11 +42,9 @@ class ForecastViewController: UIViewController {
         //TODO: - need to take out this logic
         lazy var locationManager = CLLocationManager()
         
-        viewModel.takeWeatherForecast(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)) { fModel, cModel in
-            self.viewModel.createCurrentForecastStub(fModel, cModel) { forecast in
-                self.forecastModel = forecast
-//                print(self.forecastModel)
-            }
+        viewModel.takeWeatherForecast(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)) { forecast in
+            self.forecastModel = forecast
+//            print(self.forecastModel?.current[0].windDeg)
         }
         
         setupViews()
@@ -135,49 +133,14 @@ extension ForecastViewController: UITableViewDataSource {
             
             let dModel = forecastModel?.daily[0]
             
-            switch hModel?.weather[0].descript {
-            case "Clear":
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_bright")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_bright")
-                }
-            case "Clouds":
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_cloudy")
-                }
-            case "Rain":
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_shower")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_shower")
-                }
-            case "Drizzle":
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_rain")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_rain")
-                }
-            case "Thunderstorm":
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_thunder")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_thunder")
-                }
-            case .none:
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_cloudy")
-                }
-            case .some(_):
-                if isDay {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")
-                } else {
-                    hCell.weatherImageView.image = UIImage(named: "ic_white_night_cloudy")
-                }
+            if let direct = hModel?.windDeg {
+                let icon = viewModel.setWindDirection(direct)
+                hCell.windDirectionImageView.image = UIImage(named: icon)
+            }
+            
+            if let descript = hModel?.weather[0].descript {
+                let icon = viewModel.setWeatherIcon(isDay, descript)
+                hCell.weatherImageView.image = UIImage(named: icon)
             }
             
             hCell.currentDateLabel.text = Double(hModel?.currentTime ?? 0).dateFormatted("E").uppercased() + ", " + Double(hModel?.currentTime ?? 0).dateFormatted("d MMMM")
@@ -188,33 +151,15 @@ extension ForecastViewController: UITableViewDataSource {
         case 1:
             let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
             tFHCell.model = forecastModel
+            tFHCell.viewModel = viewModel
             return tFHCell
         default:
             let dCell = tableView.dequeueReusableCell(withIdentifier: dailyID) as! ForecastDailyTableViewCell
-            //            if dailyCell.isSelected {
-            //                dailyCell.tempLabel.text = "000"
-            //            } else {
-            //                dailyCell.tempLabel.text = "111"
-            //            }
-            
             let dModel = forecastModel?.daily[indexPath.row - 2]
-            //            print(dModel)
             
-            switch dModel?.dWeather[0].descript {
-            case "Clear":
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_bright")?.withTintColor(Palette.secondTextColor)
-            case "Clouds":
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")?.withTintColor(Palette.secondTextColor)
-            case "Rain":
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_shower")?.withTintColor(Palette.secondTextColor)
-            case "Drizzle":
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_rain")?.withTintColor(Palette.secondTextColor)
-            case "Thunderstorm":
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_thunder")?.withTintColor(Palette.secondTextColor)
-            case .none:
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")?.withTintColor(Palette.secondTextColor)
-            case .some(_):
-                dCell.weatherImageView.image = UIImage(named: "ic_white_day_cloudy")?.withTintColor(Palette.secondTextColor)
+            if let descript = dModel?.dWeather[0].descript {
+                let icon = viewModel.setWeatherIcon(isDay, descript)
+                dCell.weatherImageView.image = UIImage(named: icon)?.withTintColor(Palette.secondTextColor)
             }
             
             dCell.dayLabel.text = Double(dModel?.dTime ?? 0).dateFormatted("E").uppercased()
@@ -239,26 +184,24 @@ extension ForecastViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.row > 1 {
-            let dailyCell = tableView.cellForRow(at: indexPath) as! ForecastDailyTableViewCell
-            
-            dailyCell.tempLabel.textColor = Palette.secondTintColor
-            dailyCell.dayLabel.textColor = Palette.secondTintColor
-            dailyCell.weatherImageView.tintColor = Palette.secondTintColor
-            
-            
-            dailyCell.wrapperView.layer.shadowColor = UIColor.black.cgColor
-            dailyCell.wrapperView.layer.shadowOpacity = 1
-            dailyCell.wrapperView.layer.shadowOffset = .zero
-            dailyCell.wrapperView.layer.shadowRadius = 10
-            dailyCell.wrapperView.layer.shadowPath = UIBezierPath(rect: dailyCell.wrapperView.bounds).cgPath
-            dailyCell.wrapperView.layer.rasterizationScale = UIScreen.main.scale
-            
-            //            self.goToDailyDetailAction?(indexPath.row - 3)
-            print(indexPath.row)
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+//            let dailyCell = tableView.cellForRow(at: indexPath) as! ForecastDailyTableViewCell
+//
+//            dailyCell.tempLabel.textColor = Palette.secondTintColor
+//            dailyCell.dayLabel.textColor = Palette.secondTintColor
+//            dailyCell.weatherImageView.tintColor = Palette.secondTintColor
+//
+//
+//            dailyCell.wrapperView.layer.shadowColor = UIColor.black.cgColor
+//            dailyCell.wrapperView.layer.shadowOpacity = 1
+//            dailyCell.wrapperView.layer.shadowOffset = .zero
+//            dailyCell.wrapperView.layer.shadowRadius = 10
+//            dailyCell.wrapperView.layer.shadowPath = UIBezierPath(rect: dailyCell.wrapperView.bounds).cgPath
+//            dailyCell.wrapperView.layer.rasterizationScale = UIScreen.main.scale
+//
+//            //            self.goToDailyDetailAction?(indexPath.row - 3)
+//            print(indexPath.row)
+//            tableView.reloadRows(at: [indexPath], with: .automatic)
             
         }
     }
 }
-
-

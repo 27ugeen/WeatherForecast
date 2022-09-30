@@ -100,7 +100,7 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         return label
     }()
     
-    private let windDirectionImageView: UIImageView = {
+    let windDirectionImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
