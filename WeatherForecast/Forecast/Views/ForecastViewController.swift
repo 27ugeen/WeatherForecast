@@ -12,6 +12,7 @@ import CoreLocation
 class ForecastViewController: UIViewController {
     //MARK: - props
     private let viewModel: ForecastViewModel
+    private let searchVM: SearchViewModel
     private let mapView: MKMapView
     private let locationManager: CLLocationManager
     
@@ -26,8 +27,12 @@ class ForecastViewController: UIViewController {
     }
     
     //MARK: - init
-    init(viewModel: ForecastViewModel, mapView: MKMapView, locationManager: CLLocationManager) {
+    init(viewModel: ForecastViewModel,
+         searchVM: SearchViewModel,
+         mapView: MKMapView,
+         locationManager: CLLocationManager) {
         self.viewModel = viewModel
+        self.searchVM = searchVM
         self.mapView = mapView
         self.locationManager = locationManager
         super.init(nibName: nil, bundle: nil)
@@ -40,10 +45,8 @@ class ForecastViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = Palette.mainTintColor
-        navigationController?.navigationBar.tintColor = Palette.mainTextColor
+        overrideUserInterfaceStyle = .dark
         
-
         fetchData()
         setupViews()
         setupNavButtons()
@@ -59,9 +62,9 @@ class ForecastViewController: UIViewController {
     }()
     
     private let tableView: UITableView = {
-        //TODO: - style?
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.showsVerticalScrollIndicator = false
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         return tableView
@@ -71,7 +74,6 @@ class ForecastViewController: UIViewController {
     private func fetchData() {
         viewModel.takeWeatherForecast(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)) { forecast in
             self.forecastModel = forecast
-//            print(self.forecastModel?.current[0].windDeg)
         }
     }
     
@@ -90,7 +92,6 @@ class ForecastViewController: UIViewController {
     }
     
     @objc private func leftBtnTapped() {
-        print("left tapped")
         let mapVC = MapViewController(mapView: mapView, locationManager: locationManager)
         mapVC.getWeatherAction = { coordinates in
             self.getPointWeather(coordinates)
@@ -99,8 +100,10 @@ class ForecastViewController: UIViewController {
     }
     
     @objc private func rightBtnTapped() {
-        print("right tapped")
-        let searchVC = SearchViewController()
+        let searchVC = SearchViewController(viewModel: searchVM)
+        searchVC.getWeatherAction = { coordinates in
+            self.getPointWeather(coordinates)
+        }
         self.navigationController?.pushViewController(searchVC, animated: true)
     }
 }
@@ -108,6 +111,8 @@ class ForecastViewController: UIViewController {
 //MARK: - setupViews
 extension ForecastViewController {
     private func setupViews() {
+        navigationController?.navigationBar.tintColor = Palette.mainTextColor
+        view.backgroundColor = Palette.mainTintColor
         view.addSubview(tableView)
         
         tableView.register(ForecastHeaderTableViewCell.self, forCellReuseIdentifier: headerID)
@@ -128,7 +133,7 @@ extension ForecastViewController {
 //MARK: - UITableViewDataSource
 extension ForecastViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return (forecastModel?.daily.count ?? 0) + 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -148,6 +153,8 @@ extension ForecastViewController: UITableViewDataSource {
         switch indexPath.row {
         case 0:
             let hCell = tableView.dequeueReusableCell(withIdentifier: headerID) as! ForecastHeaderTableViewCell
+            hCell.backgroundColor = Palette.mainTintColor
+            hCell.selectionStyle = .none
             
             let dModel = forecastModel?.daily[0]
             
@@ -168,11 +175,17 @@ extension ForecastViewController: UITableViewDataSource {
             return hCell
         case 1:
             let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
+            tFHCell.backgroundColor = Palette.secondTintColor
+            tFHCell.selectionStyle = .none
+            
             tFHCell.model = forecastModel
             tFHCell.viewModel = viewModel
             return tFHCell
         default:
             let dCell = tableView.dequeueReusableCell(withIdentifier: dailyID) as! ForecastDailyTableViewCell
+            dCell.backgroundColor = Palette.mainTextColor
+            dCell.selectionStyle = .none
+            
             let dModel = forecastModel?.daily[indexPath.row - 2]
             
             if let descript = dModel?.dWeather[0].descript {
@@ -202,23 +215,23 @@ extension ForecastViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.row > 1 {
-//            let dailyCell = tableView.cellForRow(at: indexPath) as! ForecastDailyTableViewCell
-//
-//            dailyCell.tempLabel.textColor = Palette.secondTintColor
-//            dailyCell.dayLabel.textColor = Palette.secondTintColor
-//            dailyCell.weatherImageView.tintColor = Palette.secondTintColor
-//
-//
-//            dailyCell.wrapperView.layer.shadowColor = UIColor.black.cgColor
-//            dailyCell.wrapperView.layer.shadowOpacity = 1
-//            dailyCell.wrapperView.layer.shadowOffset = .zero
-//            dailyCell.wrapperView.layer.shadowRadius = 10
-//            dailyCell.wrapperView.layer.shadowPath = UIBezierPath(rect: dailyCell.wrapperView.bounds).cgPath
-//            dailyCell.wrapperView.layer.rasterizationScale = UIScreen.main.scale
-//
-//            //            self.goToDailyDetailAction?(indexPath.row - 3)
-//            print(indexPath.row)
-//            tableView.reloadRows(at: [indexPath], with: .automatic)
+            //            let dailyCell = tableView.cellForRow(at: indexPath) as! ForecastDailyTableViewCell
+            //
+            //            dailyCell.tempLabel.textColor = Palette.secondTintColor
+            //            dailyCell.dayLabel.textColor = Palette.secondTintColor
+            //            dailyCell.weatherImageView.tintColor = Palette.secondTintColor
+            //
+            //
+            //            dailyCell.wrapperView.layer.shadowColor = UIColor.black.cgColor
+            //            dailyCell.wrapperView.layer.shadowOpacity = 1
+            //            dailyCell.wrapperView.layer.shadowOffset = .zero
+            //            dailyCell.wrapperView.layer.shadowRadius = 10
+            //            dailyCell.wrapperView.layer.shadowPath = UIBezierPath(rect: dailyCell.wrapperView.bounds).cgPath
+            //            dailyCell.wrapperView.layer.rasterizationScale = UIScreen.main.scale
+            //
+            //            //            self.goToDailyDetailAction?(indexPath.row - 3)
+            //            print(indexPath.row)
+            //            tableView.reloadRows(at: [indexPath], with: .automatic)
             
         }
     }

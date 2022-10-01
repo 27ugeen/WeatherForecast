@@ -37,17 +37,19 @@ class ForecastTFHoursTableViewCell: UITableViewCell {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.showsHorizontalScrollIndicator = false
-        view.backgroundColor = Palette.secondTintColor
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.showsHorizontalScrollIndicator = false
+        collection.backgroundColor = Palette.secondTintColor
         
-        view.register(ForecastTFHoursCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
+        collection.isPagingEnabled = true
         
-        view.dataSource = self
-        view.delegate = self
+        collection.register(ForecastTFHoursCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
         
-        return view
+        collection.dataSource = self
+        collection.delegate = self
+        
+        return collection
     }()
 }
 //MARK: - setupView

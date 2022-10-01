@@ -21,7 +21,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let dm = ForecastDataModel()
         let vm = ForecastViewModel(dataModel: dm)
-        let vc = ForecastViewController(viewModel: vm, mapView: mapView, locationManager: locManager)
+        let searchVM = SearchViewModel(dataModel: dm)
+        let vc = ForecastViewController(viewModel: vm,
+                                        searchVM: searchVM,
+                                        mapView: mapView,
+                                        locationManager: locManager)
 //        let vc = SearchViewController()
         
         let navVC = UINavigationController(rootViewController: vc)

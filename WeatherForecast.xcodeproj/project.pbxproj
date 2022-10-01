@@ -13,6 +13,8 @@
 		1108EB0428E49D070034EB4B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1108EB0328E49D070034EB4B /* Assets.xcassets */; };
 		1108EB0728E49D070034EB4B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1108EB0528E49D070034EB4B /* LaunchScreen.storyboard */; };
 		1108EB0F28E4A7980034EB4B /* ForecastViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1108EB0E28E4A7980034EB4B /* ForecastViewModel.swift */; };
+		11463F4F28E8A55200D788BF /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11463F4E28E8A55200D788BF /* SearchTableViewCell.swift */; };
+		11463F5128E8BD1800D788BF /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11463F5028E8BD1800D788BF /* SearchViewModel.swift */; };
 		1166A04028E4D0F900C4F386 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1166A03F28E4D0F900C4F386 /* Extensions.swift */; };
 		1166A04228E4D15700C4F386 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1166A04128E4D15700C4F386 /* Palette.swift */; };
 		1166A04528E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1166A04428E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift */; };
@@ -35,6 +37,8 @@
 		1108EB0628E49D070034EB4B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1108EB0828E49D070034EB4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1108EB0E28E4A7980034EB4B /* ForecastViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastViewModel.swift; sourceTree = "<group>"; };
+		11463F4E28E8A55200D788BF /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
+		11463F5028E8BD1800D788BF /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		1166A03F28E4D0F900C4F386 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1166A04128E4D15700C4F386 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		1166A04428E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastHeaderTableViewCell.swift; sourceTree = "<group>"; };
@@ -91,16 +95,33 @@
 			children = (
 				1108EAFA28E49D050034EB4B /* AppDelegate.swift */,
 				1108EAFC28E49D050034EB4B /* SceneDelegate.swift */,
-				11E4E6C828E733040080A946 /* Search */,
 				11D3955328E7094D00AB29DE /* DataModel */,
-				1166A03E28E4D0DB00C4F386 /* Forecast */,
-				11D3955628E70A5E00AB29DE /* Map */,
 				1166A04328E4D30A00C4F386 /* Helpers */,
+				1166A03E28E4D0DB00C4F386 /* Forecast */,
+				11E4E6C828E733040080A946 /* Search */,
+				11D3955628E70A5E00AB29DE /* Map */,
 				1108EB0328E49D070034EB4B /* Assets.xcassets */,
 				1108EB0528E49D070034EB4B /* LaunchScreen.storyboard */,
 				1108EB0828E49D070034EB4B /* Info.plist */,
 			);
 			path = WeatherForecast;
+			sourceTree = "<group>";
+		};
+		11463F5228E8BE1500D788BF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				11463F5028E8BD1800D788BF /* SearchViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		11463F5328E8BE2300D788BF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				11E4E6C628E732FC0080A946 /* SearchViewController.swift */,
+				11463F4E28E8A55200D788BF /* SearchTableViewCell.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		1166A03E28E4D0DB00C4F386 /* Forecast */ = {
@@ -160,7 +181,8 @@
 		11E4E6C828E733040080A946 /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				11E4E6C628E732FC0080A946 /* SearchViewController.swift */,
+				11463F5328E8BE2300D788BF /* Views */,
+				11463F5228E8BE1500D788BF /* Model */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -294,6 +316,7 @@
 				11C1326328E5920300BB9BF7 /* ForecastDailyTableViewCell.swift in Sources */,
 				11C1325F28E57C0400BB9BF7 /* ForecastTFHoursTableViewCell.swift in Sources */,
 				1108EAFB28E49D050034EB4B /* AppDelegate.swift in Sources */,
+				11463F5128E8BD1800D788BF /* SearchViewModel.swift in Sources */,
 				1166A04228E4D15700C4F386 /* Palette.swift in Sources */,
 				11D3955528E7097200AB29DE /* MapViewController.swift in Sources */,
 				11E4E6C728E732FC0080A946 /* SearchViewController.swift in Sources */,
@@ -301,6 +324,7 @@
 				1108EAFD28E49D050034EB4B /* SceneDelegate.swift in Sources */,
 				11C1326128E57C4900BB9BF7 /* ForecastTFHoursCollectionViewCell.swift in Sources */,
 				1108EB0F28E4A7980034EB4B /* ForecastViewModel.swift in Sources */,
+				11463F4F28E8A55200D788BF /* SearchTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

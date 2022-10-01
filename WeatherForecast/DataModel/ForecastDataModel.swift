@@ -228,14 +228,10 @@ class ForecastDataModel {
     func decodeModelFromData(_ coordinate: CLLocationCoordinate2D, completition: @escaping (ForecastModel, NameCityModel) -> Void) {
         self.takeCityFromLoc(coordinate) { cityNameModel in
             self.takeForecast(coordinate) { forecastModel in
-//                print("from dm \(cityNameModel)")
                 completition(forecastModel, cityNameModel)
             }
         }
     }
-    
-    //===========================================
-    
     
     func takeLocFromName(_ name: String, completition: @escaping ([CityModel]) -> Void) {
         let cUrl = self.createURLForGeo(name)
@@ -249,6 +245,7 @@ class ForecastDataModel {
                 if let uValue = data.value {
                     if uValue.isEmpty {
                         print("No such city found")
+                        completition([])
                         return
                     }
                     completition(uValue)
@@ -256,20 +253,6 @@ class ForecastDataModel {
             }
         }
     }
-//    lazy var locationManager = CLLocationManager()
-//    func getData() {
-//        //            let cUrl = self.createUrl(VideoURLs.playlist.rawValue, "&playlistId=", "UUu5jfQcpRLm9xhmlSd5S8xw")
-//        let cUrl = createURLForCurrentWeather(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 0, longitude: 0))
-//        print(cUrl)
-//
-//        let req = AF.request(cUrl)
-//
-//        req.responseJSON { data in
-//            print(data)
-//
-//        }
-//    }
-    
 }
 
 
