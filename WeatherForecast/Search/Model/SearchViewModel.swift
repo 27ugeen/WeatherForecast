@@ -15,16 +15,16 @@ struct CityStub {
     let lon: Double
 }
 
-class SearchViewModel {
+protocol SearchViewModelProtocol {
+    func getCities(_ text: String, completition: @escaping ([CityStub]) -> Void)
+}
+
+class SearchViewModel: SearchViewModelProtocol {
     //MARK: - props
-    private let dataModel: ForecastDataModel
+    var dataModel: DataModelProtocol!
     
     private var cities: [CityStub] = []
     
-    //MARK: - init
-    init(dataModel: ForecastDataModel) {
-        self.dataModel = dataModel
-    }
     //MARK: - methods
     private func createCityStub(_ model: CityModel, completition: @escaping (CityStub) -> Void) {
         let newCity = CityStub(country: model.country.toCountry(),
@@ -36,7 +36,7 @@ class SearchViewModel {
     
     func getCities(_ text: String, completition: @escaping ([CityStub]) -> Void) {
         self.cities = []
-        self.dataModel.takeLocFromName(text) { arr in
+        self.dataModel.getLocationFromName(text) { arr in
             arr.forEach { el in
                 self.createCityStub(el) { city in
                     self.cities.append(city)

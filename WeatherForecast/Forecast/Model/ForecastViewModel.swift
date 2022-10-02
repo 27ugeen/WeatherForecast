@@ -51,9 +51,15 @@ struct Range {
     let to: Int
 }
 
-class ForecastViewModel {
+protocol ForecastViewModelProtocol {
+    func getWeatherForecast(_ coord: CLLocationCoordinate2D, comletition: @escaping (ForecastStub) -> Void)
+    func setWeatherIcon(_ isDay: Bool, _ icon: String) -> String
+    func setWindDirection(_ direct: Int) -> String
+}
+
+class ForecastViewModel: ForecastViewModelProtocol {
     //MARK: - props
-    private let dataModel: ForecastDataModel
+    var dataModel: DataModelProtocol!
     
     private let weatherIcon: [String:String] = [
         "day.Clear" : "ic_white_day_bright",
@@ -79,10 +85,6 @@ class ForecastViewModel {
         "icon_wind_se": Range(from: 271, to: 359)
     ]
     
-    //MARK: - init
-    init(dataModel: ForecastDataModel) {
-        self.dataModel = dataModel
-    }
     //MARK: - methods
     func setWeatherIcon(_ isDay: Bool, _ icon: String) -> String {
         let name = String(format: "%@.%@", isDay ? "day" : "night", icon)
@@ -90,7 +92,7 @@ class ForecastViewModel {
     }
     
     func setWindDirection(_ direct: Int) -> String {
-        var res = ""
+        var res = "icon_wind_s"
         for (key, rangeVals) in windDirection {
             if rangeVals.from > 360 || rangeVals.from < 0 || rangeVals.to > 360 || rangeVals.to < 0 {
                 continue
@@ -103,65 +105,55 @@ class ForecastViewModel {
         return res
     }
     
-    private func createCurrentForecastStub(_ fModel: ForecastModel?,
-                                           _ cModel: NameCityModel?,
+    private func createCurrentForecastStub(_ fModel: ForecastModel,
+                                           _ cModel: CityModel,
                                            completition: @escaping (ForecastStub) -> Void) {
         
-        let newCWeather = WeatherStub(descript: fModel?.weather[0].descript ?? "no CW")
+        let newCWeather = WeatherStub(descript: fModel.weather[0].descript)
         
-        let cur = fModel
-        
-        let newCurrent = CurrentStub(currentTime: Int(cur?.currentTime ?? 0),
-                                     sunrise: Int(cur?.sunrise ?? 0),
-                                     sunset: Int(cur?.sunset ?? 0),
-                                     humidity: Int(cur?.humidity ?? 0),
-                                     windSpeed: cur?.windSpeed ?? 0,
-                                     windDeg: Int(cur?.windDeg ?? 0),
+        let newCurrent = CurrentStub(currentTime: Int(fModel.currentTime),
+                                     sunrise: Int(fModel.sunrise),
+                                     sunset: Int(fModel.sunset),
+                                     humidity: Int(fModel.humidity),
+                                     windSpeed: fModel.windSpeed,
+                                     windDeg: Int(fModel.windDeg),
                                      weather: [newCWeather])
-        let dailyArr = fModel?.daily
         
         var newDailyArr: [DailyStub] = []
-        if let uDailyArr = dailyArr {
+        for (_, dayItem) in fModel.daily.enumerated() {
+            let day = dayItem
+            let newDWeather = WeatherStub(descript: day.dWeather[0].descript)
             
-            for (_, dayItem) in uDailyArr.enumerated() {
-                let day = dayItem
-                let newDWeather = WeatherStub(descript: day.dWeather[0].descript)
-                
-                let newD = DailyStub(dTime: Int(day.dTime),
-                                     dWeather: [newDWeather],
-                                     dTempDay: day.dTempDay,
-                                     dTempNight: day.dTempNight)
-                newDailyArr.append(newD)
-            }
+            let newD = DailyStub(dTime: Int(day.dTime),
+                                 dWeather: [newDWeather],
+                                 dTempDay: day.dTempDay,
+                                 dTempNight: day.dTempNight)
+            newDailyArr.append(newD)
         }
         
-        let hourlyArr = fModel?.hourly
         var newHourlyArr: [HourlyStub] = []
-        
-        if let uHourlyArr = hourlyArr {
-            for (_, hItem) in uHourlyArr.enumerated() {
-                let hour = hItem
-                let newHWeather = WeatherStub(descript: hour.hWeather[0].descript)
-                
-                let newH = HourlyStub(hTime: Int(hour.hTime),
-                                      hTemp: hour.hTemp,
-                                      hWeather: [newHWeather])
-                newHourlyArr.append(newH)
-            }
+        for (_, hItem) in fModel.hourly.enumerated() {
+            let hour = hItem
+            let newHWeather = WeatherStub(descript: hour.hWeather[0].descript)
+            
+            let newH = HourlyStub(hTime: Int(hour.hTime),
+                                  hTemp: hour.hTemp,
+                                  hWeather: [newHWeather])
+            newHourlyArr.append(newH)
         }
         
-        let newForecast = ForecastStub(city: cModel?.name ?? "",
-                                       country: cModel?.country ?? "",
-                                       lat: fModel?.lat ?? 0,
-                                       lon: fModel?.lon ?? 0,
-                                       timezoneOffset: fModel?.timezoneOffset ?? 0,
+        let newForecast = ForecastStub(city: cModel.name,
+                                       country: cModel.country,
+                                       lat: fModel.lat,
+                                       lon: fModel.lon,
+                                       timezoneOffset: fModel.timezoneOffset,
                                        current: [newCurrent],
                                        daily: newDailyArr.sorted(by: { $0.dTime < $1.dTime }),
                                        hourly: newHourlyArr.sorted(by: { $0.hTime < $1.hTime }))
         completition(newForecast)
     }
     
-    func takeWeatherForecast(_ coord: CLLocationCoordinate2D, comletition: @escaping (ForecastStub) -> Void) {
+    func getWeatherForecast(_ coord: CLLocationCoordinate2D, comletition: @escaping (ForecastStub) -> Void) {
         self.dataModel.decodeModelFromData(coord) { fModel, cModel  in
             self.createCurrentForecastStub(fModel, cModel) { forecast in
                 comletition(forecast)

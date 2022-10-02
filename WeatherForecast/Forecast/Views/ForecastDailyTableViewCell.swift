@@ -9,7 +9,6 @@ import UIKit
 
 class ForecastDailyTableViewCell: UITableViewCell {
     //MARK: - props
-    
     static let cellId = "ForecastDailyTableViewCell"
     
     //MARK: - init
@@ -26,11 +25,11 @@ class ForecastDailyTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         self.selectedBackgroundView?.backgroundColor = Palette.mainTextColor
-        self.dayLabel.textColor = selected ? Palette.mainTintColor : Palette.secondTextColor
-        self.tempLabel.textColor = selected ? Palette.mainTintColor : Palette.secondTextColor
-        self.weatherImageView.tintColor = selected ? Palette.mainTintColor : Palette.secondTextColor
-        self.wrapperView.layer.shadowColor = selected ? Palette.mainShadowTextColor.cgColor : .none
-        self.wrapperView.layer.shadowOpacity = selected ? 0.8 : .zero
+        dayLabel.textColor = selected ? Palette.mainTintColor : Palette.secondTextColor
+        tempLabel.textColor = selected ? Palette.mainTintColor : Palette.secondTextColor
+        weatherImageView.tintColor = selected ? Palette.mainTintColor : Palette.secondTextColor
+        wrapperView.layer.shadowColor = selected ? Palette.mainShadowTextColor.cgColor : .none
+        wrapperView.layer.shadowOpacity = selected ? 0.8 : .zero
     }
     //MARK: - subviews
     private let wrapperView: UIView = {
@@ -87,14 +86,13 @@ extension ForecastDailyTableViewCell {
             wrapperView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
             dayLabel.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 20),
-//            dayLabel.centerYAnchor.constraint(equalTo: wrapperView.centerYAnchor),
             dayLabel.topAnchor.constraint(equalTo: wrapperView.topAnchor),
             dayLabel.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
             dayLabel.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor),
             
             tempLabel.centerXAnchor.constraint(equalTo: wrapperView.centerXAnchor),
             tempLabel.centerYAnchor.constraint(equalTo: wrapperView.centerYAnchor),
-
+            
             weatherImageView.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor,constant: -20),
             weatherImageView.centerYAnchor.constraint(equalTo: wrapperView.centerYAnchor),
             weatherImageView.heightAnchor.constraint(equalToConstant: 28),

@@ -10,7 +10,7 @@ import CoreLocation
 
 class SearchViewController: UIViewController {
     //MARK: - props
-    private let viewModel: SearchViewModel
+    var viewModel: SearchViewModelProtocol!
     
     private let cityCellID = SearchTableViewCell.cellId
     
@@ -24,15 +24,6 @@ class SearchViewController: UIViewController {
     var getWeatherAction: ((_ coordinates: CLLocationCoordinate2D) -> Void)?
     
     //MARK: - init
-    init(viewModel: SearchViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        nil
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -42,7 +33,6 @@ class SearchViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow(notification:)),
                                                name: UIResponder.keyboardWillShowNotification,
@@ -55,7 +45,6 @@ class SearchViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -113,6 +102,7 @@ class SearchViewController: UIViewController {
         }
         self.viewModel.getCities(searchTextField.text ?? "") { data in
             self.cities = data
+            print(data)
         }
     }
     

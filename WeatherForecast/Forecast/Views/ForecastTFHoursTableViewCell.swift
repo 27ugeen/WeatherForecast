@@ -10,18 +10,15 @@ import UIKit
 
 class ForecastTFHoursTableViewCell: UITableViewCell {
     //MARK: - props
-    
     static let cellId = "ForecastTFHoursTableViewCell"
     private let collectionCellID = ForecastTFHoursCollectionViewCell.cellId
     
+    var viewModel: ForecastViewModelProtocol!
     var model: ForecastStub? {
         didSet {
             tFHoursCollectionView.reloadData()
         }
     }
-    
-    weak var viewModel: ForecastViewModel?
-    
     //MARK: - init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -75,7 +72,8 @@ extension ForecastTFHoursTableViewCell: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = tFHoursCollectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID, for: indexPath) as! ForecastTFHoursCollectionViewCell
+        let cell = tFHoursCollectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID,
+                                                             for: indexPath) as! ForecastTFHoursCollectionViewCell
         
         let hModel = model?.hourly[indexPath.item]
         let cModel = model?.current[0]
@@ -90,8 +88,8 @@ extension ForecastTFHoursTableViewCell: UICollectionViewDataSource {
         let isDay: Bool = cellTime > sunrise && cellTime <= sunset
         
         if let descript = hModel?.hWeather[0].descript {
-            let icon = viewModel?.setWeatherIcon(isDay, descript)
-            cell.weatherImageView.image = UIImage(named: icon ?? "ic_white_day_cloudy")
+            let icon = viewModel.setWeatherIcon(isDay, descript)
+            cell.weatherImageView.image = UIImage(named: icon)
         }
         cell.timeLabel.text = "\(Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH"))⁰⁰"
         cell.tempLabel.text = "\(Int((hModel?.hTemp ?? 0).rounded()))°"
@@ -100,19 +98,27 @@ extension ForecastTFHoursTableViewCell: UICollectionViewDataSource {
 }
 //MARK: - UICollectionViewDelegateFlowLayout
 extension ForecastTFHoursTableViewCell: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 80, height: 146)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
 }

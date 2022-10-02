@@ -141,13 +141,12 @@ struct CityModel: Decodable {
     let lon: Double
 }
 
-struct NameCityModel: Decodable {
-    let country: String
-    let name: String
+protocol DataModelProtocol {
+    func decodeModelFromData(_ coordinate: CLLocationCoordinate2D, completition: @escaping (ForecastModel, CityModel) -> Void)
+    func getLocationFromName(_ name: String, completition: @escaping ([CityModel]) -> Void)
 }
 
-
-class ForecastDataModel {
+class ForecastDataModel: DataModelProtocol {
     //MARK: - props
     private var apiKey: Data {
         get {
@@ -166,12 +165,20 @@ class ForecastDataModel {
         let key = String(data: key, encoding: .utf8)
         return key ?? ""
     }
-    
+    //it would be possible to combine it with a method (createURLForCurrentWeather), but at the moment it is not necessary
     private func createURLForCity(_ coord: CLLocationCoordinate2D) -> String {
         let headRL = WeatherURLs.city.rawValue
         let cApiKey = self.encodeApiKey(apiKey)
         let qStr = "&lat=\(coord.latitude)&lon=\(coord.longitude)"
         let resultURL = headRL + cApiKey + qStr
+        return resultURL
+    }
+    //it would be possible to combine it with a method (createURLForCity), but at the moment it is not necessary
+    private func createURLForCurrentWeather(_ coordinate: CLLocationCoordinate2D) -> String {
+        let headRL = WeatherURLs.daily.rawValue
+        let cApiKey = self.encodeApiKey(apiKey)
+        let coordinateParams = "&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)"
+        let resultURL = headRL + cApiKey + coordinateParams
         return resultURL
     }
     
@@ -183,40 +190,28 @@ class ForecastDataModel {
         return resultURL
     }
     
-    private func createURLForCurrentWeather(_ coordinate: CLLocationCoordinate2D) -> String {
-        let headRL = WeatherURLs.daily.rawValue
-        let cApiKey = self.encodeApiKey(apiKey)
-        let coordinateParams = "&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)"
+    //it would be possible to combine it with a method (getForecast), but at the moment it is not necessary
+    private func getCityFromLoc(_ coord: CLLocationCoordinate2D, completition: @escaping (CityModel) -> Void) {
+        let currentUrl = self.createURLForCity(coord)
         
-        let resultURL = headRL + cApiKey + coordinateParams
-        
-        return resultURL
-    }
-    
-    func takeCityFromLoc(_ coord: CLLocationCoordinate2D, completition: @escaping (NameCityModel) -> Void) {
-        let cUrl = self.createURLForCity(coord)
-        
-        if let url = URL(string: cUrl) {
+        if let url = URL(string: currentUrl) {
             let decoder = JSONDecoder()
             let request = AF.request(url)
-            
-            request.validate().responseDecodable(of: [NameCityModel].self, decoder: decoder) { data in
+            request.validate().responseDecodable(of: [CityModel].self, decoder: decoder) { data in
                 if let uValue = data.value {
-                    completition(uValue.first ?? NameCityModel(country: "UA", name: "Kyiv"))
+                    completition(uValue.first ?? CityModel(country: "", name: "", lat: 0, lon: 0))
                 }
             }
         }
     }
     
-    func takeForecast(_ coordinate: CLLocationCoordinate2D, completition: @escaping (ForecastModel) -> Void) {
-        let cUrl = createURLForCurrentWeather(coordinate)
+    //it would be possible to combine it with a method (getCityFromLoc), but at the moment it is not necessary
+    private func getForecast(_ coordinate: CLLocationCoordinate2D, completition: @escaping (ForecastModel) -> Void) {
+        let currentUrl = createURLForCurrentWeather(coordinate)
         
-        if let url = URL(string: cUrl) {
+        if let url = URL(string: currentUrl) {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            
             let request = AF.request(url)
-            
             request.validate().responseDecodable(of: ForecastModel.self, decoder: decoder) { data in
                 if let uValue = data.value {
                     completition(uValue)
@@ -225,22 +220,20 @@ class ForecastDataModel {
         }
     }
     
-    func decodeModelFromData(_ coordinate: CLLocationCoordinate2D, completition: @escaping (ForecastModel, NameCityModel) -> Void) {
-        self.takeCityFromLoc(coordinate) { cityNameModel in
-            self.takeForecast(coordinate) { forecastModel in
-                completition(forecastModel, cityNameModel)
+    func decodeModelFromData(_ coordinate: CLLocationCoordinate2D, completition: @escaping (ForecastModel, CityModel) -> Void) {
+        self.getCityFromLoc(coordinate) { cityModel in
+            self.getForecast(coordinate) { forecastModel in
+                completition(forecastModel, cityModel)
             }
         }
     }
     
-    func takeLocFromName(_ name: String, completition: @escaping ([CityModel]) -> Void) {
-        let cUrl = self.createURLForGeo(name)
+    func getLocationFromName(_ name: String, completition: @escaping ([CityModel]) -> Void) {
+        let currentUrl = self.createURLForGeo(name)
         
-        if let url = URL(string: cUrl) {
+        if let url = URL(string: currentUrl) {
             let decoder = JSONDecoder()
-            
             let request = AF.request(url)
-            
             request.validate().responseDecodable(of: [CityModel].self, decoder: decoder) { data in
                 if let uValue = data.value {
                     if uValue.isEmpty {

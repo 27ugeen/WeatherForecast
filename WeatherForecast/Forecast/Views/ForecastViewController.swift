@@ -6,20 +6,19 @@
 //
 
 import UIKit
-import MapKit
+import Swinject
 import CoreLocation
 
 class ForecastViewController: UIViewController {
     //MARK: - props
-    private let viewModel: ForecastViewModel
-    private let searchVM: SearchViewModel
-    private let mapView: MKMapView
-    private let locationManager: CLLocationManager
+    var locationManager: CLLocationManager!
+    var viewModel: ForecastViewModelProtocol!
+    var mapVC: MapViewController!
+    var searchVC: SearchViewController!
     
     private let headerID = ForecastHeaderTableViewCell.cellId
     private let tFHoursID = ForecastTFHoursTableViewCell.cellId
     private let dailyID = ForecastDailyTableViewCell.cellId
-    
     
     private var forecastModel: ForecastStub? {
         didSet {
@@ -28,21 +27,6 @@ class ForecastViewController: UIViewController {
     }
     
     //MARK: - init
-    init(viewModel: ForecastViewModel,
-         searchVM: SearchViewModel,
-         mapView: MKMapView,
-         locationManager: CLLocationManager) {
-        self.viewModel = viewModel
-        self.searchVM = searchVM
-        self.mapView = mapView
-        self.locationManager = locationManager
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        nil
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -74,7 +58,7 @@ class ForecastViewController: UIViewController {
     
     //MARK: - methods
     private func fetchWeatherData(_ coord: CLLocationCoordinate2D) {
-        viewModel.takeWeatherForecast(coord) { forecast in
+        viewModel.getWeatherForecast(coord) { forecast in
             self.forecastModel = forecast
             self.titleLabel.text = self.forecastModel?.city
         }
@@ -89,7 +73,6 @@ class ForecastViewController: UIViewController {
     }
     
     @objc private func leftBtnTapped() {
-        let mapVC = MapViewController(mapView: mapView, locationManager: locationManager)
         mapVC.getWeatherAction = { coord in
             self.fetchWeatherData(coord)
         }
@@ -97,7 +80,6 @@ class ForecastViewController: UIViewController {
     }
     
     @objc private func rightBtnTapped() {
-        let searchVC = SearchViewController(viewModel: searchVM)
         searchVC.getWeatherAction = { coord in
             self.fetchWeatherData(coord)
         }
@@ -135,49 +117,52 @@ extension ForecastViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        
         let hModel = forecastModel?.current[0]
-
+        
         let localOffset = TimeZone.current.secondsFromGMT()
         let timeOffset = (forecastModel?.timezoneOffset ?? 0) - localOffset
         let curTime = Double((hModel?.currentTime ?? 0) + timeOffset).dateFormatted("HH")
         let sunrise = Double((hModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
         let sunset = Double((hModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
-
+        
         let isDay: Bool = curTime > sunrise && curTime <= sunset
-
+        
         switch indexPath.row {
         case 0:
             let hCell = tableView.dequeueReusableCell(withIdentifier: headerID) as! ForecastHeaderTableViewCell
             let dModel = forecastModel?.daily[0]
-
+            
             if let direct = hModel?.windDeg {
                 let icon = viewModel.setWindDirection(direct)
                 hCell.windDirectionImageView.image = UIImage(named: icon)
             }
-
+            
             if let descript = hModel?.weather[0].descript {
                 let icon = viewModel.setWeatherIcon(isDay, descript)
                 hCell.weatherImageView.image = UIImage(named: icon)
             }
-
-            hCell.currentDateLabel.text = Double(hModel?.currentTime ?? 0).dateFormatted("E").uppercased() + ", " + Double(hModel?.currentTime ?? 0).dateFormatted("d MMMM")
+            
+            hCell.currentDateLabel.text = Double(hModel?.currentTime ?? 0)
+                .dateFormatted("E")
+                .uppercased() + ", " + Double(hModel?.currentTime ?? 0)
+                .dateFormatted("d MMMM")
             hCell.tempLabel.text = "\(Int(dModel?.dTempDay.rounded() ?? 0))°/ \(Int(dModel?.dTempNight.rounded() ?? 0))°"
             hCell.humidityLabel.text = "\(hModel?.humidity ?? 0)%"
             hCell.windSpeedLabel.text = "\(Int(hModel?.windSpeed ?? 0)) m/s"
             return hCell
         case 1:
             let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
-
+            
             tFHCell.model = forecastModel
             tFHCell.viewModel = viewModel
             return tFHCell
         default:
             let dCell = tableView.dequeueReusableCell(withIdentifier: dailyID) as! ForecastDailyTableViewCell
             let dModel = forecastModel?.daily[indexPath.row - 2]
-
+            
             if let descript = dModel?.dWeather[0].descript {
-                let icon = viewModel.setWeatherIcon(isDay, descript)
+                let icon = viewModel.setWeatherIcon(true, descript)
                 dCell.weatherImageView.image = UIImage(named: icon)?.withRenderingMode(.alwaysTemplate)
             }
             dCell.dayLabel.text = Double(dModel?.dTime ?? 0).dateFormatted("E").uppercased()

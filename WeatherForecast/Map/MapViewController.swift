@@ -11,26 +11,16 @@ import CoreLocation
 
 class MapViewController: UIViewController {
     //MARK: - props
-    private let mapView: MKMapView
-    private let locationManager: CLLocationManager
+    var mapView: MKMapView!
+    var locationManager: CLLocationManager!
     private var userAnnotations: [MKPointAnnotation] = []
     
     var getWeatherAction: ((_ coordinates: CLLocationCoordinate2D) -> Void)?
     
     //MARK: - init
-    init(mapView: MKMapView, locationManager: CLLocationManager) {
-        self.mapView = mapView
-        self.locationManager = locationManager
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupMapView()
         checkUserLocationPermissions()
     }
@@ -77,7 +67,6 @@ class MapViewController: UIViewController {
                                         preferredStyle: UIAlertController.Style.alert)
         
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-//            self.mapView.removeOverlays(self.mapView.overlays)
             self.getPointWeather(props)
         }))
         alertVC.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
@@ -91,7 +80,8 @@ class MapViewController: UIViewController {
             let wayAnnotation = MKPointAnnotation()
             wayAnnotation.coordinate = pointCoords
             
-            CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: pointCoords.latitude, longitude: pointCoords.longitude)) { (placemarks, error) -> Void in
+            CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: pointCoords.latitude,
+                                                           longitude: pointCoords.longitude)) { (placemarks, error) -> Void in
                 if let unwrError = error as? NSError {
                     print("Reverse geocoder failed with error" + unwrError.localizedDescription)
                     return
@@ -116,9 +106,8 @@ class MapViewController: UIViewController {
     }
     
     @objc private func deletePins() {
-        self.mapView.removeAnnotations(userAnnotations)
-        self.mapView.removeAnnotations(mapView.annotations)
-//        print(mapView.annotations)
+        mapView.removeAnnotations(userAnnotations)
+        mapView.removeAnnotations(mapView.annotations)
     }
 }
 //MARK: - setupMapView

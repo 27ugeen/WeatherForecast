@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1108EAFB28E49D050034EB4B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1108EAFA28E49D050034EB4B /* AppDelegate.swift */; };
-		1108EAFD28E49D050034EB4B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1108EAFC28E49D050034EB4B /* SceneDelegate.swift */; };
 		1108EAFF28E49D050034EB4B /* ForecastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1108EAFE28E49D050034EB4B /* ForecastViewController.swift */; };
 		1108EB0428E49D070034EB4B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1108EB0328E49D070034EB4B /* Assets.xcassets */; };
 		1108EB0728E49D070034EB4B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1108EB0528E49D070034EB4B /* LaunchScreen.storyboard */; };
@@ -31,7 +30,6 @@
 		05DDFA593013F50FB4B7C73B /* Pods_WeatherForecast.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WeatherForecast.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1108EAF728E49D050034EB4B /* WeatherForecast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherForecast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1108EAFA28E49D050034EB4B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1108EAFC28E49D050034EB4B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		1108EAFE28E49D050034EB4B /* ForecastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastViewController.swift; sourceTree = "<group>"; };
 		1108EB0328E49D070034EB4B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1108EB0628E49D070034EB4B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -94,7 +92,6 @@
 			isa = PBXGroup;
 			children = (
 				1108EAFA28E49D050034EB4B /* AppDelegate.swift */,
-				1108EAFC28E49D050034EB4B /* SceneDelegate.swift */,
 				11D3955328E7094D00AB29DE /* DataModel */,
 				1166A04328E4D30A00C4F386 /* Helpers */,
 				1166A03E28E4D0DB00C4F386 /* Forecast */,
@@ -321,7 +318,6 @@
 				11D3955528E7097200AB29DE /* MapViewController.swift in Sources */,
 				11E4E6C728E732FC0080A946 /* SearchViewController.swift in Sources */,
 				1166A04528E4DF0700C4F386 /* ForecastHeaderTableViewCell.swift in Sources */,
-				1108EAFD28E49D050034EB4B /* SceneDelegate.swift in Sources */,
 				11C1326128E57C4900BB9BF7 /* ForecastTFHoursCollectionViewCell.swift in Sources */,
 				1108EB0F28E4A7980034EB4B /* ForecastViewModel.swift in Sources */,
 				11463F4F28E8A55200D788BF /* SearchTableViewCell.swift in Sources */,
@@ -467,6 +463,8 @@
 				DEVELOPMENT_TEAM = 6KKCSVG8J3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WeatherForecast/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -496,6 +494,8 @@
 				DEVELOPMENT_TEAM = 6KKCSVG8J3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WeatherForecast/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
