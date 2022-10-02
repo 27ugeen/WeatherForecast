@@ -55,6 +55,8 @@ class ForecastTFHoursTableViewCell: UITableViewCell {
 //MARK: - setupView
 extension ForecastTFHoursTableViewCell {
     private func setupViews() {
+        self.backgroundColor = Palette.secondTintColor
+        self.selectionStyle = .none
         contentView.addSubview(tFHoursCollectionView)
         
         NSLayoutConstraint.activate([

@@ -20,6 +20,7 @@ class ForecastViewController: UIViewController {
     private let tFHoursID = ForecastTFHoursTableViewCell.cellId
     private let dailyID = ForecastDailyTableViewCell.cellId
     
+    
     private var forecastModel: ForecastStub? {
         didSet {
             tableView.reloadData()
@@ -45,9 +46,10 @@ class ForecastViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        overrideUserInterfaceStyle = .dark
+        //MARK: - the OnBoarding screen (or another) is required to get the current coordinates
+        let defCoord = CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)
         
-        fetchData()
+        fetchWeatherData(defCoord)
         setupViews()
         setupNavButtons()
     }
@@ -71,9 +73,10 @@ class ForecastViewController: UIViewController {
     }()
     
     //MARK: - methods
-    private func fetchData() {
-        viewModel.takeWeatherForecast(locationManager.location?.coordinate ?? CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)) { forecast in
+    private func fetchWeatherData(_ coord: CLLocationCoordinate2D) {
+        viewModel.takeWeatherForecast(coord) { forecast in
             self.forecastModel = forecast
+            self.titleLabel.text = self.forecastModel?.city
         }
     }
     
@@ -85,24 +88,18 @@ class ForecastViewController: UIViewController {
         self.navigationItem.setRightBarButton(rightBarButton, animated: true)
     }
     
-    private func getPointWeather(_ coord: CLLocationCoordinate2D) {
-        viewModel.takeWeatherForecast(coord) { forecast in
-            self.forecastModel = forecast
-        }
-    }
-    
     @objc private func leftBtnTapped() {
         let mapVC = MapViewController(mapView: mapView, locationManager: locationManager)
-        mapVC.getWeatherAction = { coordinates in
-            self.getPointWeather(coordinates)
+        mapVC.getWeatherAction = { coord in
+            self.fetchWeatherData(coord)
         }
         self.navigationController?.pushViewController(mapVC, animated: true)
     }
     
     @objc private func rightBtnTapped() {
         let searchVC = SearchViewController(viewModel: searchVM)
-        searchVC.getWeatherAction = { coordinates in
-            self.getPointWeather(coordinates)
+        searchVC.getWeatherAction = { coord in
+            self.fetchWeatherData(coord)
         }
         self.navigationController?.pushViewController(searchVC, animated: true)
     }
@@ -111,6 +108,7 @@ class ForecastViewController: UIViewController {
 //MARK: - setupViews
 extension ForecastViewController {
     private func setupViews() {
+        overrideUserInterfaceStyle = .dark
         navigationController?.navigationBar.tintColor = Palette.mainTextColor
         view.backgroundColor = Palette.mainTintColor
         view.addSubview(tableView)
@@ -137,37 +135,32 @@ extension ForecastViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let hModel = forecastModel?.current[0]
-        //TODO: -
-        self.titleLabel.text = forecastModel?.city
-        
+
         let localOffset = TimeZone.current.secondsFromGMT()
         let timeOffset = (forecastModel?.timezoneOffset ?? 0) - localOffset
         let curTime = Double((hModel?.currentTime ?? 0) + timeOffset).dateFormatted("HH")
         let sunrise = Double((hModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
         let sunset = Double((hModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
-        
+
         let isDay: Bool = curTime > sunrise && curTime <= sunset
-        
+
         switch indexPath.row {
         case 0:
             let hCell = tableView.dequeueReusableCell(withIdentifier: headerID) as! ForecastHeaderTableViewCell
-            hCell.backgroundColor = Palette.mainTintColor
-            hCell.selectionStyle = .none
-            
             let dModel = forecastModel?.daily[0]
-            
+
             if let direct = hModel?.windDeg {
                 let icon = viewModel.setWindDirection(direct)
                 hCell.windDirectionImageView.image = UIImage(named: icon)
             }
-            
+
             if let descript = hModel?.weather[0].descript {
                 let icon = viewModel.setWeatherIcon(isDay, descript)
                 hCell.weatherImageView.image = UIImage(named: icon)
             }
-            
+
             hCell.currentDateLabel.text = Double(hModel?.currentTime ?? 0).dateFormatted("E").uppercased() + ", " + Double(hModel?.currentTime ?? 0).dateFormatted("d MMMM")
             hCell.tempLabel.text = "\(Int(dModel?.dTempDay.rounded() ?? 0))°/ \(Int(dModel?.dTempNight.rounded() ?? 0))°"
             hCell.humidityLabel.text = "\(hModel?.humidity ?? 0)%"
@@ -175,24 +168,18 @@ extension ForecastViewController: UITableViewDataSource {
             return hCell
         case 1:
             let tFHCell = tableView.dequeueReusableCell(withIdentifier: tFHoursID) as! ForecastTFHoursTableViewCell
-            tFHCell.backgroundColor = Palette.secondTintColor
-            tFHCell.selectionStyle = .none
-            
+
             tFHCell.model = forecastModel
             tFHCell.viewModel = viewModel
             return tFHCell
         default:
             let dCell = tableView.dequeueReusableCell(withIdentifier: dailyID) as! ForecastDailyTableViewCell
-            dCell.backgroundColor = Palette.mainTextColor
-            dCell.selectionStyle = .none
-            
             let dModel = forecastModel?.daily[indexPath.row - 2]
-            
+
             if let descript = dModel?.dWeather[0].descript {
                 let icon = viewModel.setWeatherIcon(isDay, descript)
-                dCell.weatherImageView.image = UIImage(named: icon)?.withTintColor(Palette.secondTextColor)
+                dCell.weatherImageView.image = UIImage(named: icon)?.withRenderingMode(.alwaysTemplate)
             }
-            
             dCell.dayLabel.text = Double(dModel?.dTime ?? 0).dateFormatted("E").uppercased()
             dCell.tempLabel.text = "\(Int(dModel?.dTempDay.rounded() ?? 0))° / \(Int(dModel?.dTempNight.rounded() ?? 0))°"
             return dCell
@@ -209,30 +196,6 @@ extension ForecastViewController: UITableViewDelegate {
             return 146
         default:
             return 70
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        if indexPath.row > 1 {
-            //            let dailyCell = tableView.cellForRow(at: indexPath) as! ForecastDailyTableViewCell
-            //
-            //            dailyCell.tempLabel.textColor = Palette.secondTintColor
-            //            dailyCell.dayLabel.textColor = Palette.secondTintColor
-            //            dailyCell.weatherImageView.tintColor = Palette.secondTintColor
-            //
-            //
-            //            dailyCell.wrapperView.layer.shadowColor = UIColor.black.cgColor
-            //            dailyCell.wrapperView.layer.shadowOpacity = 1
-            //            dailyCell.wrapperView.layer.shadowOffset = .zero
-            //            dailyCell.wrapperView.layer.shadowRadius = 10
-            //            dailyCell.wrapperView.layer.shadowPath = UIBezierPath(rect: dailyCell.wrapperView.bounds).cgPath
-            //            dailyCell.wrapperView.layer.rasterizationScale = UIScreen.main.scale
-            //
-            //            //            self.goToDailyDetailAction?(indexPath.row - 3)
-            //            print(indexPath.row)
-            //            tableView.reloadRows(at: [indexPath], with: .automatic)
-            
         }
     }
 }

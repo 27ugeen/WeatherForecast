@@ -57,7 +57,6 @@ extension ForecastTFHoursCollectionViewCell {
         contentView.addSubview(tempLabel)
         
         NSLayoutConstraint.activate([
-            
             timeLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 28),
             timeLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             

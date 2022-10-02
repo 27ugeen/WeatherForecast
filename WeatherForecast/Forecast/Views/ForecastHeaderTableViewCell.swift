@@ -9,11 +9,9 @@ import UIKit
 
 class ForecastHeaderTableViewCell: UITableViewCell {
     //MARK: - props
-    
     static let cellId = "ForecastHeaderTableViewCell"
     
     //MARK: - init
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -23,7 +21,6 @@ class ForecastHeaderTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     //MARK: - subviews
-    
     let currentDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -113,6 +110,9 @@ class ForecastHeaderTableViewCell: UITableViewCell {
 //MARK: - setupViews
 extension ForecastHeaderTableViewCell {
     private func setupViews() {
+        self.backgroundColor = Palette.mainTintColor
+        self.selectionStyle = .none
+        
         contentView.backgroundColor = Palette.mainTintColor
         contentView.addSubview(currentDateLabel)
         contentView.addSubview(weatherImageView)
@@ -130,8 +130,6 @@ extension ForecastHeaderTableViewCell {
             
             weatherImageView.topAnchor.constraint(equalTo: currentDateLabel.bottomAnchor, constant: 34),
             weatherImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6),
-            //            mainImageView.widthAnchor.constraint(equalToConstant: 150),
-            //            mainImageView.heightAnchor.constraint(equalToConstant: 90),
             weatherImageView.widthAnchor.constraint(equalToConstant: 210),
             weatherImageView.heightAnchor.constraint(equalToConstant: 140),
             
