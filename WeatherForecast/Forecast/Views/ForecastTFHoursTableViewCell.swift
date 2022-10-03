@@ -81,11 +81,10 @@ extension ForecastTFHoursTableViewCell: UICollectionViewDataSource {
         let localOffset = TimeZone.current.secondsFromGMT()
         let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
         
-        let cellTime = Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH")
-        let sunrise = Double((cModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
-        let sunset = Double((cModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
-        
-        let isDay: Bool = cellTime > sunrise && cellTime <= sunset
+        let isDay: Bool = viewModel.determineTheTimeOfTheDay(hModel?.hTime ?? 0,
+                                                             model?.timezoneOffset ?? 0,
+                                                             cModel?.sunrise ?? 0,
+                                                             cModel?.sunset ?? 0)
         
         if let descript = hModel?.hWeather[0].descript {
             let icon = viewModel.setWeatherIcon(isDay, descript)

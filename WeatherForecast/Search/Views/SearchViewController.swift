@@ -102,20 +102,23 @@ class SearchViewController: UIViewController {
         }
         self.viewModel.getCities(searchTextField.text ?? "") { data in
             self.cities = data
-            print(data)
         }
     }
     
     private func getCityWeather(_ coord: CLLocationCoordinate2D) {
         self.getWeatherAction?(coord)
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popVCToLeft()
     }
     
     @objc private func leftBtnTapped() {
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popVCToLeft()
     }
     
     @objc private func rightBtnTapped() {
+        guard searchTextField.text?.count ?? 0 > 1 else {
+            showAlert(message: "Enter some city...")
+            return
+        }
         let lat = selectedCity?.lat ?? 0
         let lon = selectedCity?.lon ?? 0
         self.getCityWeather(CLLocationCoordinate2D(latitude: lat, longitude: lon))

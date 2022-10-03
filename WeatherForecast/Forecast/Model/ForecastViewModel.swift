@@ -55,6 +55,7 @@ protocol ForecastViewModelProtocol {
     func getWeatherForecast(_ coord: CLLocationCoordinate2D, comletition: @escaping (ForecastStub) -> Void)
     func setWeatherIcon(_ isDay: Bool, _ icon: String) -> String
     func setWindDirection(_ direct: Int) -> String
+    func determineTheTimeOfTheDay(_ curTime: Int, _ timezoneOffset: Int, _ sunrise: Int, _ sunset: Int) -> Bool
 }
 
 class ForecastViewModel: ForecastViewModelProtocol {
@@ -103,6 +104,18 @@ class ForecastViewModel: ForecastViewModelProtocol {
             }
         }
         return res
+    }
+    
+    func determineTheTimeOfTheDay(_ curTime: Int, _ timezoneOffset: Int, _ sunrise: Int, _ sunset: Int) -> Bool {
+        let localOffset = TimeZone.current.secondsFromGMT()
+        let timeOffset = timezoneOffset - localOffset
+        let curTime = Double(curTime + timeOffset).dateFormatted("HH")
+        let sunrise = Double(sunrise + timeOffset).dateFormatted("HH")
+        let sunset = Double(sunset + timeOffset).dateFormatted("HH")
+        
+        let isDay: Bool = curTime > sunrise && curTime <= sunset
+        
+        return isDay
     }
     
     private func createCurrentForecastStub(_ fModel: ForecastModel,

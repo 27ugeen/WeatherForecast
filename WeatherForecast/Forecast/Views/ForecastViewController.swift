@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Swinject
 import CoreLocation
 
 class ForecastViewController: UIViewController {
@@ -30,7 +29,7 @@ class ForecastViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //MARK: - the OnBoarding screen (or another) is required to get the current coordinates
+        //TODO: - the OnBoarding screen (or another) is required to get the current coordinates
         let defCoord = CLLocationCoordinate2D(latitude: 47.09608, longitude: 37.54817)
         
         fetchWeatherData(defCoord)
@@ -73,17 +72,17 @@ class ForecastViewController: UIViewController {
     }
     
     @objc private func leftBtnTapped() {
+        searchVC.getWeatherAction = { coord in
+            self.fetchWeatherData(coord)
+        }
+        self.navigationController?.pushVCFromLeft(controller: searchVC)
+    }
+    
+    @objc private func rightBtnTapped() {
         mapVC.getWeatherAction = { coord in
             self.fetchWeatherData(coord)
         }
         self.navigationController?.pushViewController(mapVC, animated: true)
-    }
-    
-    @objc private func rightBtnTapped() {
-        searchVC.getWeatherAction = { coord in
-            self.fetchWeatherData(coord)
-        }
-        self.navigationController?.pushViewController(searchVC, animated: true)
     }
 }
 
@@ -120,13 +119,10 @@ extension ForecastViewController: UITableViewDataSource {
         
         let hModel = forecastModel?.current[0]
         
-        let localOffset = TimeZone.current.secondsFromGMT()
-        let timeOffset = (forecastModel?.timezoneOffset ?? 0) - localOffset
-        let curTime = Double((hModel?.currentTime ?? 0) + timeOffset).dateFormatted("HH")
-        let sunrise = Double((hModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
-        let sunset = Double((hModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
-        
-        let isDay: Bool = curTime > sunrise && curTime <= sunset
+        let isDay: Bool = viewModel.determineTheTimeOfTheDay(hModel?.currentTime ?? 0,
+                                                             forecastModel?.timezoneOffset ?? 0,
+                                                             hModel?.sunrise ?? 0,
+                                                             hModel?.sunset ?? 0)
         
         switch indexPath.row {
         case 0:
@@ -160,6 +156,8 @@ extension ForecastViewController: UITableViewDataSource {
         default:
             let dCell = tableView.dequeueReusableCell(withIdentifier: dailyID) as! ForecastDailyTableViewCell
             let dModel = forecastModel?.daily[indexPath.row - 2]
+            //TODO: - need remove selectionStyle && keep up shadow..
+//            dCell.selectionStyle = .none
             
             if let descript = dModel?.dWeather[0].descript {
                 let icon = viewModel.setWeatherIcon(true, descript)
