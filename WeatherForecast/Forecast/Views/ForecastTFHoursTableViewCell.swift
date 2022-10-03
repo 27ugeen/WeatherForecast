@@ -10,12 +10,15 @@ import UIKit
 
 class ForecastTFHoursTableViewCell: UITableViewCell {
     //MARK: - props
-    
     static let cellId = "ForecastTFHoursTableViewCell"
     private let collectionCellID = ForecastTFHoursCollectionViewCell.cellId
     
-//    var model: ForecastStub?
-    
+    var viewModel: ForecastViewModelProtocol!
+    var model: ForecastStub? {
+        didSet {
+            tFHoursCollectionView.reloadData()
+        }
+    }
     //MARK: - init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -31,22 +34,26 @@ class ForecastTFHoursTableViewCell: UITableViewCell {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.showsHorizontalScrollIndicator = false
-        view.backgroundColor = Palette.secondTintColor
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.showsHorizontalScrollIndicator = false
+        collection.backgroundColor = Palette.secondTintColor
         
-        view.register(ForecastTFHoursCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
+        collection.isPagingEnabled = true
         
-        view.dataSource = self
-        view.delegate = self
+        collection.register(ForecastTFHoursCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
         
-        return view
+        collection.dataSource = self
+        collection.delegate = self
+        
+        return collection
     }()
 }
 //MARK: - setupView
 extension ForecastTFHoursTableViewCell {
     private func setupViews() {
+        self.backgroundColor = Palette.secondTintColor
+        self.selectionStyle = .none
         contentView.addSubview(tFHoursCollectionView)
         
         NSLayoutConstraint.activate([
@@ -65,76 +72,52 @@ extension ForecastTFHoursTableViewCell: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = tFHoursCollectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID, for: indexPath) as! ForecastTFHoursCollectionViewCell
+        let cell = tFHoursCollectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID,
+                                                             for: indexPath) as! ForecastTFHoursCollectionViewCell
         
-//        let hModel = model?.hourly[indexPath.item]
-//        let cModel = model?.current[0]
-//
-//        let localOffset = TimeZone.current.secondsFromGMT()
-//        let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
-//
-//        let curTime = Double((cModel?.currentTime ?? 0) + timeOffset).dateFormatted("HH")
-//        let cellTime = Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH")
-//        let sunrise = Double((cModel?.sunrise ?? 0) + timeOffset).dateFormatted("HH")
-//        let sunset = Double((cModel?.sunset ?? 0) + timeOffset).dateFormatted("HH")
-
-//        if cellTime == curTime {
-//            cell.wrapperView.backgroundColor = UIColor(rgb: 0x204EC7)
-//            cell.tempLabel.textColor = .white
-//            cell.timeLabel.textColor = .white
-//        } else {
-//            cell.wrapperView.backgroundColor = nil
-//            cell.tempLabel.textColor = .black
-//            cell.timeLabel.textColor = .black
-//        }
+        let hModel = model?.hourly[indexPath.item]
+        let cModel = model?.current[0]
         
-//            switch hModel?.hWeather[0].descript {
-//            case "clear sky":
-//                if cellTime > sunrise && cellTime <= sunset {
-//                cell.weatherImageView.image = UIImage(named: "sun")
-//                } else {
-//                cell.weatherImageView.image = UIImage(named: "moon")
-//                }
-//            case "scattered clouds":
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//            case "few clouds":
-//                if cellTime > sunrise && cellTime <= sunset {
-//                cell.weatherImageView.image = UIImage(named: "fewClouds")
-//                } else {
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//                }
-//            case "heavy intensity rain":
-//                cell.weatherImageView.image = UIImage(named: "heavyRain")
-//            case "moderate rain":
-//                cell.weatherImageView.image = UIImage(named: "rain")
-//            case "light rain":
-//                cell.weatherImageView.image = UIImage(named: "rain")
-//            case .none:
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//            case .some(_):
-//                cell.weatherImageView.image = UIImage(named: "scatClouds")
-//            }
+        let localOffset = TimeZone.current.secondsFromGMT()
+        let timeOffset = (model?.timezoneOffset ?? 0) - localOffset
         
-//        cell.timeLabel.text = "\(Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH:mm".toSetTimeUnits("short")))"
-//        cell.tempLabel.text = "\(Int((hModel?.hTemp ?? 0).rounded()).toSetTempUnits())"
+        let isDay: Bool = viewModel.determineTheTimeOfTheDay(hModel?.hTime ?? 0,
+                                                             model?.timezoneOffset ?? 0,
+                                                             cModel?.sunrise ?? 0,
+                                                             cModel?.sunset ?? 0)
+        
+        if let descript = hModel?.hWeather[0].descript {
+            let icon = viewModel.setWeatherIcon(isDay, descript)
+            cell.weatherImageView.image = UIImage(named: icon)
+        }
+        cell.timeLabel.text = "\(Double((hModel?.hTime ?? 0) + timeOffset).dateFormatted("HH"))⁰⁰"
+        cell.tempLabel.text = "\(Int((hModel?.hTemp ?? 0).rounded()))°"
         return cell
     }
 }
 //MARK: - UICollectionViewDelegateFlowLayout
 extension ForecastTFHoursTableViewCell: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 80, height: 146)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
 }

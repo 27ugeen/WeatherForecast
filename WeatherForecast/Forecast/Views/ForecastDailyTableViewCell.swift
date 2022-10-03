@@ -9,7 +9,6 @@ import UIKit
 
 class ForecastDailyTableViewCell: UITableViewCell {
     //MARK: - props
-    
     static let cellId = "ForecastDailyTableViewCell"
     
     //MARK: - init
@@ -22,22 +21,23 @@ class ForecastDailyTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        self.selectedBackgroundView?.backgroundColor = Palette.mainTextColor
+        dayLabel.textColor = selected ? Palette.mainTintColor : Palette.secondTextColor
+        tempLabel.textColor = selected ? Palette.mainTintColor : Palette.secondTextColor
+        weatherImageView.tintColor = selected ? Palette.mainTintColor : Palette.secondTextColor
+        wrapperView.layer.shadowColor = selected ? Palette.mainShadowTextColor.cgColor : .none
+        wrapperView.layer.shadowOpacity = selected ? 0.8 : .zero
+    }
     //MARK: - subviews
-    let wrapperView: UIView = {
+    private let wrapperView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = Palette.mainTextColor
-//        view.contentMode = .scaleAspectFill
-//        view.layer.cornerRadius = 4
-//        view.layer.shadowColor = UIColor.red.cgColor
-//        view.layer.shadowOpacity = 0.8
-//        view.layer.shadowOffset = .zero
-//        view.layer.shadowRadius = 100
-//        view.layer.shadowPath = UIBezierPath(rect: view.bounds).cgPath
-//        view.layer.rasterizationScale = UIScreen.main.scale
-        view.clipsToBounds = true
-//        view.layer.borderWidth = 1
-//        view.layer.borderColor = UIColor.black.cgColor
+        view.layer.masksToBounds = false
+        view.layer.shadowRadius = 15
         return view
     }()
     
@@ -72,14 +72,8 @@ class ForecastDailyTableViewCell: UITableViewCell {
 //MARK: - setupViews
 extension ForecastDailyTableViewCell {
     private func setupViews() {
+        self.backgroundColor = Palette.mainTextColor
         contentView.addSubview(wrapperView)
-        
-//        wrapperView.layer.shadowColor = UIColor.red.cgColor
-//        wrapperView.layer.shadowOpacity = 0.8
-//        wrapperView.layer.shadowOffset = .zero
-//        wrapperView.layer.shadowRadius = 100
-//        wrapperView.layer.shadowPath = UIBezierPath(rect: wrapperView.bounds).cgPath
-//        wrapperView.layer.rasterizationScale = UIScreen.main.scale
         
         wrapperView.addSubview(dayLabel)
         wrapperView.addSubview(tempLabel)
@@ -92,7 +86,9 @@ extension ForecastDailyTableViewCell {
             wrapperView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
             dayLabel.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 20),
-            dayLabel.centerYAnchor.constraint(equalTo: wrapperView.centerYAnchor),
+            dayLabel.topAnchor.constraint(equalTo: wrapperView.topAnchor),
+            dayLabel.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
+            dayLabel.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor),
             
             tempLabel.centerXAnchor.constraint(equalTo: wrapperView.centerXAnchor),
             tempLabel.centerYAnchor.constraint(equalTo: wrapperView.centerYAnchor),

@@ -21,7 +21,7 @@ class ForecastTFHoursCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     //MARK: - subviews
-    private let timeLabel: UILabel = {
+    let timeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "01⁰⁰"
@@ -30,7 +30,7 @@ class ForecastTFHoursCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let weatherImageView: UIImageView = {
+    let weatherImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
@@ -40,7 +40,7 @@ class ForecastTFHoursCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let tempLabel: UILabel = {
+    let tempLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "27°"
@@ -57,7 +57,6 @@ extension ForecastTFHoursCollectionViewCell {
         contentView.addSubview(tempLabel)
         
         NSLayoutConstraint.activate([
-            
             timeLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 28),
             timeLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
