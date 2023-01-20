@@ -71,16 +71,16 @@ class ForecastViewController: UIViewController {
         self.navigationItem.setRightBarButton(rightBarButton, animated: true)
     }
     
-    @objc private func leftBtnTapped() {
-        searchVC.getWeatherAction = { coord in
-            self.fetchWeatherData(coord)
+    @objc private func leftBtnTapped() { 
+        searchVC.getWeatherAction = { [weak self] coord in
+            self?.fetchWeatherData(coord)
         }
         self.navigationController?.pushVCFromLeft(controller: searchVC)
     }
     
     @objc private func rightBtnTapped() {
-        mapVC.getWeatherAction = { coord in
-            self.fetchWeatherData(coord)
+        mapVC.getWeatherAction = { [weak self] coord in
+            self?.fetchWeatherData(coord)
         }
         self.navigationController?.pushViewController(mapVC, animated: true)
     }

@@ -8,5 +8,6 @@ target 'WeatherForecast' do
   # Pods for WeatherForecast
    pod 'Alamofire', '~> 5.6.1'
    pod 'Swinject'
+   pod 'BigInt'
 
 end

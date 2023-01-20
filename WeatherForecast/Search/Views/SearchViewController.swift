@@ -71,6 +71,9 @@ class SearchViewController: UIViewController {
         text.leftViewMode = .always
         text.becomeFirstResponder()
         
+        text.returnKeyType = .done
+        text.delegate = self
+        
         text.addTarget(self, action: #selector(textChanged), for: .editingChanged)
         return text
     }()
@@ -119,8 +122,15 @@ class SearchViewController: UIViewController {
             showAlert(message: "Enter some city...")
             return
         }
+        
+        guard searchTextField.text == "\((selectedCity?.name ?? "") + ", " + (selectedCity?.country ?? ""))" else {
+            showAlert(message: "Choose from the list")
+            return
+        }
+        
         let lat = selectedCity?.lat ?? 0
         let lon = selectedCity?.lon ?? 0
+        print("lat: \(lat), lon: \(lon)")
         self.getCityWeather(CLLocationCoordinate2D(latitude: lat, longitude: lon))
     }
     
@@ -185,5 +195,12 @@ private extension SearchViewController {
     @objc private func keyboardWillHide(notification: NSNotification) {
         tableView.contentInset.bottom = .zero
         tableView.verticalScrollIndicatorInsets = .zero
+    }
+}
+
+extension SearchViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.rightBtnTapped()
+        return self.searchTextField.resignFirstResponder()
     }
 }
